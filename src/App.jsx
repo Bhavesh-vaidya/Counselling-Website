@@ -5,6 +5,10 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import About from './pages/About';
 import WhatsAppButton from './components/WhatsAppButton';
+import Services from './pages/Services';
+import ServiceClarity from './pages/ServiceClarity';
+import ServiceGuided from './pages/ServiceGuided';
+import ServiceInsight from './pages/ServiceInsight';
 
 function App() {
   return (
@@ -17,6 +21,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/service-clarity" element={<ServiceClarity />} />
+            <Route path="/service-guided" element={<ServiceGuided />} />
+            <Route path="/service-insight" element={<ServiceInsight />} />
           </Routes>
         </main>
 

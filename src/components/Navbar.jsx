@@ -28,7 +28,12 @@ const Navbar = () => {
         >
           About Me
         </Link>
-        <a href="#" className="hover:text-[#3a5a40] transition-colors pb-1">Services</a>
+        <Link 
+          to="/services" 
+          className={`pb-1 transition-colors ${isActive('/services') ? 'text-[#3a5a40] border-b-2 border-[#3a5a40]' : 'hover:text-[#3a5a40]'}`}
+        >
+          Services
+        </Link>
         <a href="#" className="hover:text-[#3a5a40] transition-colors pb-1">Contact</a>
       </div>
 
