@@ -12,7 +12,7 @@ import ServiceInsight from './pages/ServiceInsight';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/Counselling-Website">
       <div className="min-h-screen bg-[#fcfbf9] flex flex-col font-sans relative">
         <Navbar />
         
