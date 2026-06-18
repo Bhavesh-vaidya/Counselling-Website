@@ -34,7 +34,12 @@ const Navbar = () => {
         >
           Services
         </Link>
-        <a href="#" className="hover:text-[#3a5a40] transition-colors pb-1">Contact</a>
+        <Link 
+          to="/contact" 
+          className={`pb-1 transition-colors ${isActive('/contact') ? 'text-[#3a5a40] border-b-2 border-[#3a5a40]' : 'hover:text-[#3a5a40]'}`}
+        >
+          Contact
+        </Link>
       </div>
 
       {/* Right Button */}

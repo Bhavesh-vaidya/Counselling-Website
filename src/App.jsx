@@ -6,9 +6,12 @@ import Home from './pages/Home';
 import About from './pages/About';
 import WhatsAppButton from './components/WhatsAppButton';
 import Services from './pages/Services';
+import Contact from './pages/Contact'
 import ServiceClarity from './pages/ServiceClarity';
 import ServiceGuided from './pages/ServiceGuided';
 import ServiceInsight from './pages/ServiceInsight';
+import Booking from './pages/Booking';
+import Confirmation from './pages/Confirmation';
 
 function App() {
   return (
@@ -22,6 +25,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/service-clarity" element={<ServiceClarity />} />
             <Route path="/service-guided" element={<ServiceGuided />} />
             <Route path="/service-insight" element={<ServiceInsight />} />
