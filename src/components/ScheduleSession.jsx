@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 
 const ScheduleSession = ({ serviceName, price, duration }) => {
   const [selectedTime, setSelectedTime] = useState('10:00 AM');
+  const navigate = useNavigate(); // 2. Initialize navigate
 
   const timeSlots = ['10:00 AM', '11:30 AM', '02:00 PM', '04:30 PM', '06:00 PM'];
 
@@ -63,7 +65,11 @@ const ScheduleSession = ({ serviceName, price, duration }) => {
               <span className="text-[#555555] text-sm">Total Amount</span>
               <span className="font-bold text-[#1a1a1a]">{price}</span>
             </div>
-            <button className="w-full bg-[#1a1a1a] hover:bg-[#333333] text-white py-4 rounded-xl font-medium transition-colors">
+            {/* 3. Add onClick to trigger navigation */}
+            <button 
+              onClick={() => navigate('/booking')} 
+              className="w-full bg-[#1a1a1a] hover:bg-[#333333] text-white py-4 rounded-xl font-medium transition-colors"
+            >
               BOOK NOW
             </button>
           </div>
