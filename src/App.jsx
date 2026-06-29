@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -16,6 +17,7 @@ import Confirmation from './pages/Confirmation';
 function App() {
   return (
     <Router basename="/Counselling-Website">
+      <ScrollToTop />
       <div className="min-h-screen bg-[#fcfbf9] flex flex-col font-sans relative">
         <Navbar />
         
