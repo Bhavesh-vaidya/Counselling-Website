@@ -1,9 +1,20 @@
 import React from 'react';
 
 const WhatsAppButton = () => {
+  // Replace this with your actual WhatsApp business/personal number.
+  // IMPORTANT: Include the country code, but DO NOT include '+' or any spaces, dashes, or brackets.
+  // Example for US: "12345678901", Example for India: "919876543210"
+  const phoneNumber = "917208299488"; 
+  
+  // Optional: A default message that will populate in the user's chat box when they click
+  const message = "Hi Archi! I would like to know more about your counseling services.";
+  
+  // This automatically encodes the spaces and special characters for the URL
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
   return (
     <a
-      href="#" 
+      href={whatsappUrl} 
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-50 bg-[#25D366] p-4 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
