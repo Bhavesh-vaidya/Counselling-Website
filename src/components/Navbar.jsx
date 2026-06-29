@@ -42,12 +42,9 @@ const Navbar = () => {
         </Link>
       </div>
 
-      {/* Right Button */}
-      <div>
-        <button className="bg-[#4a5f46] hover:bg-[#3a5a40] text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors">
-          Book Session
-        </button>
-      </div>
+      {/* Empty div to maintain flexbox spacing (justify-between) if needed, 
+          or you can leave it out completely. I've removed the button. */}
+      <div className="hidden md:block w-24"></div> 
     </nav>
   );
 };

@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 
 const About = () => {
+  const navigate = useNavigate(); // 2. Initialize navigate
+
   return (
     <div className="w-full bg-[#fcfbf9] text-[#333333] font-sans">
       
@@ -145,13 +148,14 @@ const About = () => {
         <div className="max-w-5xl mx-auto bg-[#4a5f46] rounded-[2.5rem] py-16 px-6 text-center shadow-lg">
           <h2 className="text-3xl md:text-4xl font-serif text-white mb-4">Ready to begin your journey?</h2>
           <p className="text-[#dcedd6] mb-10 max-w-lg mx-auto">
-            Sessions are available both in-person and via secure online video consultations.
+            Sessions are available via secure online video consultations.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <button className="w-full sm:w-auto bg-white text-[#4a5f46] font-medium px-8 py-3.5 rounded-full hover:bg-[#f0f4ef] transition-colors">
-              Book a Session
-            </button>
-            <button className="w-full sm:w-auto border border-white text-white font-medium px-8 py-3.5 rounded-full hover:bg-[#3a5a40] transition-colors">
+            {/* 3. Add onClick to trigger navigation */}
+            <button 
+              onClick={() => navigate('/services')} 
+              className="w-full sm:w-auto border border-white text-white font-medium px-8 py-3.5 rounded-full hover:bg-[#3a5a40] transition-colors"
+            >
               View Services
             </button>
           </div>
