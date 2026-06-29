@@ -1,6 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // <-- 1. Imported Link here
 
 const Home = () => {
+  // 1. Set up the state for the carousel
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // 2. Create the array of 3 testimonial records
+  const testimonials = [
+    {
+      quote: "Archi provided a space where I felt truly heard for the first time. The sessions helped me navigate a major life transition with a sense of calm I didn't know I possessed.",
+      author: "Sarah M.",
+      service: "Guided Counseling"
+    },
+    {
+      quote: "I was skeptical about online therapy, but this platform felt incredibly safe. The Deep Insight sessions helped me understand patterns I've been stuck in for years.",
+      author: "David L.",
+      service: "Deep Insight"
+    },
+    {
+      quote: "The Emotional Clarity session was exactly what I needed when I felt completely overwhelmed. Archi's approach is warm, professional, and genuinely transformative.",
+      author: "Elena R.",
+      service: "Emotional Clarity"
+    }
+  ];
+
+  // 3. Navigation handler functions
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+  };
+
   return (
     <div className="w-full bg-[#fcfbf9] text-[#333333] font-sans">
       
@@ -18,20 +50,21 @@ const Home = () => {
             Hi, I'm Archi. I believe mental wellness is a collaborative journey. As your dedicated counselor, I provide a safe, tranquil space to help you navigate life's complexities and cultivate lasting emotional resilience.
           </p>
           <div className="flex flex-wrap items-center gap-4 pt-4">
-            <button className="bg-[#3a5a40] hover:bg-[#2c4430] text-white px-6 py-3 rounded-full flex items-center gap-2 transition-colors">
-              Book Session
+            
+            {/* 2. Changed from <button> to <Link> */}
+            <Link 
+              to="/services" 
+              className="bg-[#3a5a40] hover:bg-[#2c4430] text-white px-6 py-3 rounded-full flex items-center gap-2 transition-colors"
+            >
+              View our services
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            </button>
-            <button className="border border-[#3a5a40] text-[#3a5a40] hover:bg-[#f0f4ef] px-6 py-3 rounded-full flex items-center gap-2 transition-colors">
-              About Me
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </button>
+            </Link>
+
           </div>
         </div>
 
         {/* Right Image */}
         <div className="flex-1 relative">
-          {/* Decorative shapes behind image */}
           <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-[#e8f0e4] rounded-full opacity-70 z-0"></div>
           <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#faebd7] rounded-full opacity-70 z-0"></div>
           
@@ -45,7 +78,6 @@ const Home = () => {
 
       {/* MISSION STATEMENT SECTION */}
       <section className="bg-[#f4f3ef] w-full py-16 md:py-24 relative">
-
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="md:w-1/3">
             <h2 className="text-3xl font-serif text-[#1a1a1a]">Cultivating Tranquility</h2>
@@ -59,75 +91,71 @@ const Home = () => {
         </div>
       </section>
 
-      {/* SERVICES SECTION */}
-      <section className="max-w-7xl mx-auto px-6 py-16 md:py-24">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-          <div className="max-w-2xl">
-            <h2 className="text-3xl md:text-4xl font-serif text-[#1a1a1a] mb-4">Specialized Support</h2>
-            <p className="text-[#555555]">
-              Tailored sessions designed to meet you exactly where you are in your healing journey.
-            </p>
-          </div>
-          <button className="text-[#555555] hover:text-[#1a1a1a] flex items-center gap-2 mt-4 md:mt-0 pb-1">
-            View All Services 
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </button>
-        </div>
+      {/* TESTIMONIALS CAROUSEL SECTION */}
+      <section className="w-full py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          
+          {/* Section Header */}
+          <h2 className="text-3xl md:text-4xl font-serif text-[#1a1a1a]">Kind Words from Clients</h2>
+          <div className="w-16 h-1 bg-[#8c7355] mx-auto mt-4 mb-12"></div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <div className="bg-[#fcfaf8] border border-[#f0eee9] p-8 rounded-2xl hover:shadow-md transition-shadow flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 bg-[#dcedd6] rounded-xl flex items-center justify-center mb-6 text-[#3a5a40]">
-                {/* Lotus/Leaf Icon */}
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-              </div>
-              <h3 className="text-xl font-bold text-[#1a1a1a] mb-3">Emotional Clarity</h3>
-              <p className="text-[#555555] mb-8 text-sm leading-relaxed">
-                Identify the core patterns holding you back and develop a roadmap for emotional regulation and self-awareness.
-              </p>
+          {/* Testimonial Card */}
+          <div className="max-w-4xl mx-auto bg-white rounded-[2.5rem] p-10 md:p-16 shadow-sm border border-[#f0eee9] relative min-h-[350px] flex flex-col justify-center">
+            
+            {/* Quote Icon */}
+            <div className="flex justify-center mb-6">
+              <svg className="w-12 h-12 text-[#8c7355]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+              </svg>
             </div>
-            <div className="flex gap-2">
-              <span className="bg-[#e8f0e4] text-[#4a5f46] text-xs font-semibold px-3 py-1 rounded-full">Mindfulness</span>
-              <span className="bg-[#e8f0e4] text-[#4a5f46] text-xs font-semibold px-3 py-1 rounded-full">Insight</span>
-            </div>
-          </div>
 
-          {/* Card 2 */}
-          <div className="bg-[#fcfaf8] border border-[#f0eee9] p-8 rounded-2xl hover:shadow-md transition-shadow flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 bg-[#faebd7] rounded-xl flex items-center justify-center mb-6 text-[#a68a64]">
-                 {/* Head/Mind Icon */}
-                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-              </div>
-              <h3 className="text-xl font-bold text-[#1a1a1a] mb-3">Guided Counseling</h3>
-              <p className="text-[#555555] mb-8 text-sm leading-relaxed">
-                One-on-one sessions focused on processing trauma, managing anxiety, and navigating life transitions with expert support.
+            {/* Dynamic Testimonial Content based on State */}
+            <div className="transition-opacity duration-300 ease-in-out">
+              <p className="text-lg md:text-xl italic font-serif text-[#555555] leading-relaxed max-w-2xl mx-auto mb-8">
+                "{testimonials[currentSlide].quote}"
               </p>
+              <h3 className="text-lg font-bold text-[#1a1a1a] mb-3">
+                {testimonials[currentSlide].author}
+              </h3>
+              <span className="inline-block bg-[#dcedd6] text-[#3a5a40] text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full">
+                {testimonials[currentSlide].service}
+              </span>
             </div>
-            <div className="flex gap-2">
-              <span className="bg-[#e8ece4] text-[#4a5f46] text-xs font-semibold px-3 py-1 rounded-full">CBT</span>
-              <span className="bg-[#e8ece4] text-[#4a5f46] text-xs font-semibold px-3 py-1 rounded-full">Trauma</span>
-            </div>
+
+            {/* Navigation Arrows (Visible on md and up) */}
+            <button 
+              onClick={prevSlide}
+              className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-md border border-[#f0eee9] items-center justify-center text-[#555555] hover:text-[#1a1a1a] hover:bg-[#fcfbf9] hover:scale-105 transition-all"
+              aria-label="Previous Testimonial"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <button 
+              onClick={nextSlide}
+              className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-md border border-[#f0eee9] items-center justify-center text-[#555555] hover:text-[#1a1a1a] hover:bg-[#fcfbf9] hover:scale-105 transition-all"
+              aria-label="Next Testimonial"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+
           </div>
 
-          {/* Card 3 */}
-          <div className="bg-[#fcfaf8] border border-[#f0eee9] p-8 rounded-2xl hover:shadow-md transition-shadow flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 bg-[#4a5f46] rounded-xl flex items-center justify-center mb-6 text-white">
-                {/* Growth/Tree Icon */}
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-              </div>
-              <h3 className="text-xl font-bold text-[#1a1a1a] mb-3">Deep Insight</h3>
-              <p className="text-[#555555] mb-8 text-sm leading-relaxed">
-                Intensive sessions for long-term growth, exploring sub-conscious drivers and building a robust internal support system.
-              </p>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <span className="bg-[#e8f0e4] text-[#4a5f46] text-xs font-semibold px-3 py-1 rounded-full">Growth</span>
-              <span className="bg-[#e8f0e4] text-[#4a5f46] text-xs font-semibold px-3 py-1 rounded-full">Psychotherapy</span>
-            </div>
+          {/* Pagination Dots (Moved Outside the Box) */}
+          <div className="flex justify-center gap-3 mt-8">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  currentSlide === index 
+                    ? 'bg-[#8c7355]' 
+                    : 'bg-[#e8ece4] hover:bg-[#dcdcdc]'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
+
         </div>
       </section>
 
