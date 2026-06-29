@@ -54,7 +54,6 @@ const ServiceInsight = () => {
       <section className="px-6">
         <ScheduleSession serviceName="Deep Insight Session" price="₹2,500" duration="90 Minutes" />
       </section>
-      <ContactSection />
     </div>
   );
 };

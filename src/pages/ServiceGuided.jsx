@@ -59,7 +59,6 @@ const ServiceGuided = () => {
       <section className="px-6">
         <ScheduleSession serviceName="Guided Counseling Session" price="₹1,800" duration="60 Minutes" />
       </section>
-      <ContactSection />
     </div>
   );
 };

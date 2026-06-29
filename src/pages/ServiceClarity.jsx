@@ -60,7 +60,6 @@ const ServiceClarity = () => {
       <section className="px-6">
         <ScheduleSession serviceName="Emotional Clarity Session" price="₹1,500" duration="60 Minutes" />
       </section>
-      <ContactSection />
     </div>
   );
 };
