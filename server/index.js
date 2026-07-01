@@ -26,7 +26,6 @@ app.post('/send', async (req, res) => {
     await transporter.sendMail({
       from: `"Archi Website" <${process.env.EMAIL_USER}>`,
       to: 'sumitv2025@gmail.com',
-      replyTo: email, // This allows you to click 'Reply' in Gmail to contact the user directly
       subject: `New Message from ${name}`,
       text: `
         You have received a new inquiry from your website.
