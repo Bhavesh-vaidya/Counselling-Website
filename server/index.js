@@ -1,4 +1,3 @@
-console.log("Loading index.js...");
 import express from 'express';
 import nodemailer from 'nodemailer';
 import cors from 'cors';
@@ -14,24 +13,35 @@ app.post('/send', async (req, res) => {
   const { name, email, message } = req.body;
 
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // Replace with your provider's SMTP host
+    host: 'smtp.gmail.com',
     port: 587,
-    secure: false,
+    secure: false, // true for 465, false for other ports
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // Use an "App Password" for Gmail
+      user: process.env.EMAIL_USER, // Your Gmail address
+      pass: process.env.EMAIL_PASS, // Your 16-character App Password
     },
   });
 
   try {
     await transporter.sendMail({
-      from: email,
+      from: `"Archi Website" <${process.env.EMAIL_USER}>`,
       to: 'sumitv2025@gmail.com',
+      replyTo: email, // This allows you to click 'Reply' in Gmail to contact the user directly
       subject: `New Message from ${name}`,
-      text: message,
+      text: `
+        You have received a new inquiry from your website.
+
+        Name: ${name}
+        Email: ${email}
+
+        Message:
+        ${message}
+      `,
     });
+    console.log("Email sent successfully!");
     res.status(200).send('Email sent!');
   } catch (error) {
+    console.error("SMTP ERROR:", error);
     res.status(500).send(error.toString());
   }
 });
