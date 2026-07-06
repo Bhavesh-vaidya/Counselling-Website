@@ -1,3 +1,22 @@
+@import 'react-calendar/dist/Calendar.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Force Red Navigation and Green Selection */
+.bg-white .react-calendar__navigation button {
+  color: red !important;
+  font-weight: bold !important;
+}
+
+.bg-white .react-calendar__tile--active {
+  background: green !important;
+  color: white !important;
+  border-radius: 12px !important;
+}
+
+.bg-white .react-calendar__tile:hover {
+  background: lightgreen !important;
+  border-radius: 12px !important;
+}

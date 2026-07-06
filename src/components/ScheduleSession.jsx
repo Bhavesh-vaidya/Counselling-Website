@@ -1,79 +1,75 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 const ScheduleSession = ({ serviceName, price, duration }) => {
-  const [selectedTime, setSelectedTime] = useState('10:00 AM');
-  const navigate = useNavigate(); // 2. Initialize navigate
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState('');
+  const navigate = useNavigate();
 
-  const timeSlots = ['10:00 AM', '11:30 AM', '02:00 PM', '04:30 PM', '06:00 PM'];
+  const timeSlots = ["06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM"];
+
+  const handleBookNow = () => {
+    sessionStorage.setItem('bookingData', JSON.stringify({ 
+      serviceName, price, duration, 
+      date: date.toDateString(), 
+      time 
+    }));
+    navigate('/booking'); 
+  };
 
   return (
-    <div className="bg-[#eef3ea] rounded-3xl p-8 md:p-12 w-full max-w-6xl mx-auto my-16">
-      <div className="mb-10 text-center md:text-left">
-        <h2 className="text-3xl font-serif text-[#1a1a1a] mb-3">Schedule your session</h2>
-        <p className="text-[#555555]">Select a date and time that works best for you to begin your journey.</p>
+    <div className="bg-white p-8 md:p-12 rounded-[2rem] border border-gray-100 shadow-xl max-w-4xl mx-auto my-12">
+      <h2 className="text-3xl font-serif text-gray-900 mb-8">Schedule your session</h2>
+      
+      <div className="grid md:grid-cols-2 gap-12 items-start">
+        {/* Styled Calendar Container */}
+{/* Styled Calendar Container - add these classes */}
+<div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+  <Calendar onChange={setDate} value={date} />
+</div>
+
+        {/* Evening Slots */}
+        <div>
+          <label className="block text-xs font-bold uppercase text-gray-400 mb-6 tracking-widest">
+            Available Evening Slots
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            {timeSlots.map((slot) => (
+              <button 
+                key={slot} 
+                onClick={() => setTime(slot)}
+                className={`py-4 rounded-2xl border-2 transition-all font-semibold ${
+                  time === slot 
+                    ? 'bg-[#3a5a40] text-white border-[#3a5a40]' 
+                    : 'bg-white border-gray-200 hover:border-[#3a5a40] text-gray-800'
+                }`}
+              >
+                {slot}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-8 p-6 bg-gray-50 rounded-2xl">
+            <p className="text-gray-500 text-sm">Selected Date: <span className="font-bold text-gray-900">{date.toDateString()}</span></p>
+            <p className="text-gray-500 text-sm mt-1">Selected Time: <span className="font-bold text-gray-900">{time || "None"}</span></p>
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 md:gap-16">
-        {/* Mock Calendar Column */}
-        <div className="flex-1 bg-white p-6 rounded-2xl shadow-sm border border-[#f0eee9]">
-          <div className="flex justify-between items-center mb-6">
-            <span className="font-bold text-[#1a1a1a]">October 2026</span>
-            <div className="flex gap-2 text-[#555555]">
-              <button className="hover:text-[#1a1a1a]">&lt;</button>
-              <button className="hover:text-[#1a1a1a]">&gt;</button>
-            </div>
-          </div>
-          <div className="grid grid-cols-7 text-center text-sm mb-2 text-[#888888]">
-            <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-          </div>
-          <div className="grid grid-cols-7 text-center gap-y-4 text-sm text-[#333333]">
-            <span className="text-gray-300">29</span><span className="text-gray-300">30</span>
-            <span>1</span><span>2</span><span>3</span>
-            <span className="bg-[#1a1a1a] text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto cursor-pointer shadow-md">4</span>
-            <span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
-          </div>
+      <div className="mt-10 pt-8 border-t border-gray-100 flex justify-between items-center">
+        <div>
+          <p className="text-sm text-gray-500">{serviceName}</p>
+          <p className="text-2xl font-bold text-gray-900">{price}</p>
         </div>
-
-        {/* Time Slots & Summary Column */}
-        <div className="flex-1 flex flex-col justify-between">
-          <div>
-            <h3 className="text-xs font-bold text-[#888888] tracking-widest uppercase mb-4">Available Time Slots</h3>
-            <div className="grid grid-cols-2 gap-3 mb-8">
-              {timeSlots.map((time) => (
-                <button 
-                  key={time}
-                  onClick={() => setSelectedTime(time)}
-                  className={`py-3 rounded-xl border text-sm font-medium transition-colors ${
-                    selectedTime === time 
-                      ? 'bg-[#1a1a1a] border-[#1a1a1a] text-white' 
-                      : 'bg-white border-[#dcdcdc] text-[#555555] hover:border-[#1a1a1a]'
-                  }`}
-                >
-                  {time}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#f0eee9]">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-[#555555] text-sm">Service</span>
-              <span className="font-medium text-[#1a1a1a]">{serviceName}</span>
-            </div>
-            <div className="flex justify-between items-center mb-6">
-              <span className="text-[#555555] text-sm">Total Amount</span>
-              <span className="font-bold text-[#1a1a1a]">{price}</span>
-            </div>
-            {/* 3. Add onClick to trigger navigation */}
-            <button 
-              onClick={() => navigate('/booking')} 
-              className="w-full bg-[#1a1a1a] hover:bg-[#333333] text-white py-4 rounded-xl font-medium transition-colors"
-            >
-              BOOK NOW
-            </button>
-          </div>
-        </div>
+        <button 
+          onClick={handleBookNow} 
+          disabled={!time}
+          className="bg-gray-900 text-white px-10 py-4 rounded-2xl font-medium hover:bg-gray-800 transition-all disabled:opacity-40"
+        >
+          BOOK NOW
+        </button>
       </div>
     </div>
   );
