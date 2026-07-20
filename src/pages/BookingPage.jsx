@@ -1,36 +1,49 @@
-// src/pages/BookingPage.jsx
 import React, { useEffect, useState } from 'react';
+import QRCode from 'qrcode.react'; // Import the QR library
 
 const BookingPage = () => {
   const [booking, setBooking] = useState(null);
+  
+  // Accessing the UPI ID from .env
+  const upiId = import.meta.env.VITE_UPI_ID;
 
   useEffect(() => {
-    const data = JSON.parse(sessionStorage.getItem('bookingData'));
-    setBooking(data);
+    const savedData = sessionStorage.getItem('bookingData');
+    if (savedData) {
+      setBooking(JSON.parse(savedData));
+    }
   }, []);
 
-  if (!booking) return <div className="p-20 text-center">Loading your booking details...</div>;
+  if (!booking) return <div className="p-20 text-center">Loading...</div>;
+
+  // Generate the UPI deep link
+  // Format: upi://pay?pa=PAYEE_ADDRESS&pn=PAYEE_NAME&am=AMOUNT&cu=INR
+  const cleanPrice = booking.price.replace('₹', '').replace(',', '');
+  const upiLink = `upi://pay?pa=${upiId}&pn=Archi&am=${cleanPrice}&cu=INR`;
 
   return (
-    <div className="min-h-screen bg-[#fcfbf9] py-20 px-6">
-      <div className="max-w-2xl mx-auto bg-white p-10 rounded-3xl shadow-sm border border-[#f0eee9]">
-        <h1 className="text-3xl font-serif mb-2">Complete Your Booking</h1>
-        <p className="text-[#555555] mb-8">Service: <strong>{booking.serviceName}</strong> | Date: {booking.date} at {booking.time}</p>
-
-        <div className="space-y-6">
-          <input type="text" placeholder="Full Name" className="w-full p-4 border rounded-xl" />
-          <input type="email" placeholder="Email Address" className="w-full p-4 border rounded-xl" />
-          
-          <div className="border-t pt-8 mt-8 text-center">
-            <h3 className="text-xl font-bold mb-4">Scan QR to Pay {booking.price}</h3>
-            {/* REPLACE THIS WITH YOUR ACTUAL QR IMAGE PATH */}
-            <img src="/assets/my-qr.png" alt="UPI QR" className="w-48 h-48 mx-auto mb-4" />
-            <p className="font-mono bg-gray-100 p-2 rounded">UPI ID: yourname@upi</p>
-            
-            <input type="text" placeholder="Enter Transaction ID" className="w-full p-4 border rounded-xl mt-6" />
-            <button className="w-full mt-6 bg-[#3a5a40] text-white py-4 rounded-xl">CONFIRM BOOKING</button>
-          </div>
+    <div className="min-h-screen bg-gray-50 py-12 px-6">
+      <div className="max-w-xl mx-auto bg-white p-12 rounded-[2rem] shadow-xl text-center">
+        <h1 className="text-2xl font-serif mb-8">Confirm Your Payment</h1>
+        
+        {/* Dynamic QR Code */}
+        <div className="flex justify-center mb-8">
+          <QRCode 
+            value={upiLink} 
+            size={200} 
+            level="H" // High error correction
+          />
         </div>
+
+        <p className="text-gray-600 mb-2">Scan with any UPI app</p>
+        <p className="text-2xl font-bold text-[#3a5a40] mb-8">{booking.price}</p>
+        
+        <button 
+          onClick={() => alert("Redirecting to payment gateway...")}
+          className="w-full bg-gray-900 text-white py-4 rounded-2xl"
+        >
+          I HAVE PAID
+        </button>
       </div>
     </div>
   );
