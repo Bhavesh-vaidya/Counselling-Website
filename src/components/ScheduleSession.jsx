@@ -11,8 +11,11 @@ const ScheduleSession = ({ serviceName, price, duration }) => {
   const timeSlots = ["06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM"];
 
   const handleBookNow = () => {
+    // Save to session storage so Booking page can access it
     sessionStorage.setItem('bookingData', JSON.stringify({ 
-      serviceName, price, duration, 
+      serviceName, 
+      price, 
+      duration, 
       date: date.toDateString(), 
       time 
     }));
@@ -25,10 +28,9 @@ const ScheduleSession = ({ serviceName, price, duration }) => {
       
       <div className="grid md:grid-cols-2 gap-12 items-start">
         {/* Styled Calendar Container */}
-{/* Styled Calendar Container - add these classes */}
-<div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
-  <Calendar onChange={setDate} value={date} />
-</div>
+        <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+          <Calendar onChange={setDate} value={date} />
+        </div>
 
         {/* Evening Slots */}
         <div>
