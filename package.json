@@ -10,6 +10,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "postbuild": "node scripts/copy-404.js",
     "server": "node server/index.js",
+    "test-email": "node server/test-email.js",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

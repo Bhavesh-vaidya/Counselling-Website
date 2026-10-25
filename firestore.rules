@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Client bookings contain personal details: the website may CREATE them
+    // but nobody can read/modify them from the browser (view them in the
+    // Firebase console).
+    match /bookings/{id} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+
+    // Slot locks contain only date/time/status, so reading them is safe.
+    // A "booked" slot can never be changed; "held" slots can be re-held or booked.
+    match /slots/{slotId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['date','time','status','holderId','expiresAt','createdAt'])
+                    && request.resource.data.status in ['held','booked'];
+      allow update: if resource.data.status == 'held'
+                    && request.resource.data.keys().hasOnly(['date','time','status','holderId','expiresAt','createdAt'])
+                    && request.resource.data.status in ['held','booked'];
+      allow delete: if false;
+    }
+  }
+}

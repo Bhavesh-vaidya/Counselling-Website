@@ -9,7 +9,7 @@ import {
   CalendarClock 
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MEET_LINK } from '../config/razorpay';
+import { MEET_LINK, BUSINESS_EMAIL } from '../config/razorpay';
 
 // "Mon Oct 26 2026" + "07:00 PM" -> Date
 const parseSlot = (dateStr, timeStr) => {
@@ -87,7 +87,7 @@ const Confirmation = () => {
           Your Session is Confirmed
         </h1>
         <p className="text-gray-600 text-center max-w-xl mb-12 leading-relaxed">
-          Confirmation details have been sent to your email and WhatsApp. We look forward to seeing you at our scheduled time.
+          Confirmation details have been sent to your email. We look forward to seeing you at our scheduled time.
         </p>
 
         <div className="w-full max-w-3xl mb-8 -mt-6 text-center text-sm text-gray-600">
@@ -171,9 +171,9 @@ const Confirmation = () => {
                 Life happens. If you need to change your appointment, please let us know at least 24 hours in advance.
               </p>
             </div>
-            <Link to="/contact" className="block text-center w-full border border-white/30 hover:bg-white/10 text-white rounded-xl py-3.5 text-sm font-medium transition-colors">
+            <a href={`mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent('Reschedule request - ' + booking.paymentId)}`} className="block text-center w-full border border-white/30 hover:bg-white/10 text-white rounded-xl py-3.5 text-sm font-medium transition-colors">
               Manage Appointment
-            </Link>
+            </a>
           </div>
 
         </div>

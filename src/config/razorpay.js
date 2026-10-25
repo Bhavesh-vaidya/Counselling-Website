@@ -28,3 +28,6 @@ export const THEME_COLOR = '#3a5a40';
 // Replace with the real Google Meet link when available
 export const MEET_LINK =
   import.meta.env.VITE_MEET_LINK || 'https://meet.google.com/demo-link-here';
+
+// Business inbox shown on the website (all enquiries & bookings go here too)
+export const BUSINESS_EMAIL = 'anoracounseling@gmail.com';

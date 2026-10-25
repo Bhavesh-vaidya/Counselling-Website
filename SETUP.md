@@ -39,3 +39,29 @@ node index.js          # backend on :5000 (contact form + Razorpay)
 Amounts are unchanged. The server keeps a copy in `SERVICE_PRICES`
 (`server/index.js`) and rejects any order whose amount doesn't match,
 so if you ever change a price, change it in both places.
+
+
+## Email (business inbox: anoracounseling@gmail.com)
+All emails are sent FROM and delivered TO anoracounseling@gmail.com:
+- contact form -> business inbox (+ short auto-reply to the visitor)
+- every booking -> confirmation to the client + full booking/intake details to the business inbox
+
+One-time setup:
+1. Sign in to anoracounseling@gmail.com -> Google Account -> Security -> turn ON 2-Step Verification.
+2. Security -> App passwords -> create one (name it "Archi website"). Copy the 16 characters.
+3. Create `server/.env` (copy `server/.env.example`) and set:
+   ```
+   EMAIL_USER=anoracounseling@gmail.com
+   EMAIL_PASS=xxxx xxxx xxxx xxxx
+   ```
+4. Start the server (`npm run server`) - the console prints `Email OK` or the exact problem.
+5. Run `npm run test-email` - a test mail should arrive in the inbox (check spam too).
+The server MUST be running for any email to go out (locally, or hosted for the live site).
+Use `MAIL_DRY_RUN=1` in server/.env to print emails to the console instead of sending.
+
+## Slot locking (no double booking)
+Taken date/time slots are stored in a Firestore collection called `slots` and are greyed out
+("Booked") for everyone else. A slot is reserved for 15 minutes when someone starts paying
+and becomes permanent once the booking is saved.
+Publish `firestore.rules` in Firebase Console -> Firestore Database -> Rules -> Publish
+(required, otherwise the website cannot read/write `slots`).

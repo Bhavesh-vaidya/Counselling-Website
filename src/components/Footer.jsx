@@ -1,4 +1,5 @@
 import React from 'react';
+import { BUSINESS_EMAIL } from '../config/razorpay';
 
 const Footer = () => {
   return (
@@ -11,6 +12,9 @@ const Footer = () => {
           <p className="text-[#555555] text-sm leading-relaxed">
             © 2026 Archi Counseling. Cultivating tranquility through professional care.
           </p>
+          <a href={`mailto:${BUSINESS_EMAIL}`} className="inline-block mt-3 text-sm text-[#3a5a40] hover:underline">
+            {BUSINESS_EMAIL}
+          </a>
         </div>
 
         {/* Right Side: Links */}

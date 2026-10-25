@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { MapPin, Mail, Globe, AtSign, Send } from 'lucide-react';
-import { API_URL } from '../config/razorpay';
+import { API_URL, BUSINESS_EMAIL } from '../config/razorpay';
 
 const Contact = () => {
   const form = useRef();
   const [status, setStatus] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,10 +26,13 @@ const Contact = () => {
         setStatus('success');
         form.current.reset();
       } else {
+        const data = await response.json().catch(() => ({}));
+        setErrorMsg(data.error || 'Failed to send.');
         setStatus('error');
       }
     } catch (err) {
       console.error(err);
+      setErrorMsg(`Could not reach the server. Please email us at ${BUSINESS_EMAIL}.`);
       setStatus('error');
     }
   };
@@ -50,7 +54,7 @@ const Contact = () => {
               </div>
               <div className="flex items-center gap-4 text-gray-700">
                 <Mail className="w-6 h-6 text-[#8c7355] shrink-0" />
-                <span>hello@archicounseling.com</span>
+                <a href={`mailto:${BUSINESS_EMAIL}`} className="hover:text-[#3a5a40] transition-colors">{BUSINESS_EMAIL}</a>
               </div>
             </div>
           </div>
@@ -76,7 +80,7 @@ const Contact = () => {
                   {status === 'sending' ? 'Sending...' : 'Send Message'}
                 </button>
                 {status === 'success' && <p className="text-center text-green-700">Message sent successfully!</p>}
-                {status === 'error' && <p className="text-center text-red-600">Failed to send.</p>}
+                {status === 'error' && <p className="text-center text-red-600">{errorMsg || 'Failed to send.'}</p>}
               </form>
             </div>
           </div>

@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ShieldCheck, Check, Loader2, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
-import { IS_DEMO } from '../config/razorpay';
+import { holdSlot, confirmBookingWithSlot } from '../utils/slots';
+import { sendBookingEmail } from '../utils/email';
+import { IS_DEMO, BUSINESS_EMAIL } from '../config/razorpay';
 import { payWithRazorpay, simulateDemoPayment } from '../utils/razorpay';
 
 const Booking = () => {
@@ -38,6 +38,7 @@ const Booking = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [slotLost, setSlotLost] = useState(false);
 
   const numericAmount = sessionData.price.replace(/[^0-9.]/g, '') || "0";
 
@@ -55,11 +56,16 @@ const Booking = () => {
 
   const handleFinalPayment = async () => {
     setPaymentError('');
+    setSlotLost(false);
     setIsSubmitting(true);
+    let payment = null; // set once money has actually been taken
 
     try {
+      // 0. Reserve the date/time so nobody else can book it while we pay
+      await holdSlot(sessionData.date, sessionData.time);
+
       // 1. Take payment (Razorpay checkout, or a simulated payment in demo mode)
-      const payment = IS_DEMO
+      payment = IS_DEMO
         ? await simulateDemoPayment()
         : await payWithRazorpay({
             serviceName: sessionData.serviceName,
@@ -67,8 +73,8 @@ const Booking = () => {
             customer: { name: formData.fullName, email: formData.email },
           });
 
-      // 2. Save booking to Firestore (only reached after the payment succeeded)
-      await addDoc(collection(db, "bookings"), {
+      // 2. Mark slot as booked + save booking to Firestore (atomic)
+      await confirmBookingWithSlot(sessionData.date, sessionData.time, {
         ...formData,
         serviceName: sessionData.serviceName,
         amount: numericAmount,
@@ -78,11 +84,21 @@ const Booking = () => {
         paymentMethod: "razorpay",
         razorpayOrderId: payment.orderId,
         razorpayPaymentId: payment.paymentId,
-        paymentStatus: IS_DEMO ? "Demo - Not Paid" : "Payment Completed",
-        createdAt: serverTimestamp()
+        paymentStatus: IS_DEMO ? "Demo - Not Paid" : "Payment Completed"
       });
 
-      // 3. Hand the details to the confirmation page and clear the cart
+      // 3. Emails (client + business inbox). Runs in background; a mail problem
+      //    must never undo a successful booking.
+      sendBookingEmail({
+        ...formData,
+        serviceName: sessionData.serviceName,
+        date: sessionData.date,
+        time: sessionData.time,
+        paymentId: payment.paymentId,
+        orderId: payment.orderId
+      });
+
+      // 4. Hand the details to the confirmation page and clear the cart
       sessionStorage.setItem('confirmedBooking', JSON.stringify({
         serviceName: sessionData.serviceName,
         date: sessionData.date,
@@ -97,6 +113,16 @@ const Booking = () => {
       navigate('/confirmation', { replace: true });
     } catch (error) {
       setIsSubmitting(false);
+      if (error.message === 'SLOT_TAKEN') {
+        if (payment) {
+          // Extremely rare: paid, but the slot was taken in the meantime
+          setPaymentError(`Your payment was received (ID: ${payment.paymentId}) but this time was just taken by someone else. Please email ${BUSINESS_EMAIL} with this ID and we will arrange a new time or a refund.`);
+        } else {
+          setSlotLost(true);
+          setPaymentError('Sorry, this date and time was just booked by someone else. Please choose another slot.');
+        }
+        return;
+      }
       if (error.message === 'PAYMENT_CANCELLED') {
         setPaymentError('Payment was cancelled. You can try again whenever you are ready.');
         return;
@@ -296,6 +322,11 @@ const Booking = () => {
                   {paymentError && (
                     <p role="alert" className="mb-6 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
                       {paymentError}
+                      {slotLost && (
+                        <button type="button" onClick={() => navigate('/services')} className="block mt-2 font-medium underline">
+                          Choose another time
+                        </button>
+                      )}
                     </p>
                   )}
 
