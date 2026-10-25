@@ -1,4 +1,5 @@
 import React from 'react';
+import { asset } from '../utils/asset';
 import { Link } from 'react-router-dom';
 
 const Services = () => {
@@ -38,7 +39,7 @@ const Services = () => {
               Tailored for individuals feeling overwhelmed, confused, or mentally exhausted. We work together to untangle thoughts and restore a sense of calm perspective.
             </p>
             <img 
-              src="/assets/service-clarity.jpg" 
+              src={asset('service-clarity.jpg')} 
               alt="Calm water ripples" 
               className="w-full h-48 object-cover rounded-2xl mb-6"
             />
@@ -64,7 +65,7 @@ const Services = () => {
               A supportive space addressing anxiety, stress, overthinking, and self-esteem. Focused on building practical tools and emotional resilience for daily life.
             </p>
             <img 
-              src="/assets/service-guided.jpg" 
+              src={asset('service-guided.jpg')} 
               alt="Hands holding a warm mug" 
               className="w-full h-48 object-cover rounded-2xl mb-6"
             />
@@ -90,7 +91,7 @@ const Services = () => {
               For those seeking to understand deep emotional patterns, past experiences, and core triggers. A profound journey into the self to foster lasting change.
             </p>
             <img 
-              src="/assets/service-insight.jpg" 
+              src={asset('service-insight.jpg')} 
               alt="Plant in vase on desk" 
               className="w-full h-48 object-cover rounded-2xl mb-6"
             />
@@ -115,9 +116,9 @@ const Services = () => {
             </p>
           </div>
           <div className="shrink-0">
-            <button className="bg-[#4a5f46] hover:bg-[#3a5a40] text-white font-medium px-8 py-4 rounded-full transition-colors w-full md:w-auto">
+            <Link to="/contact" className="inline-block text-center bg-[#4a5f46] hover:bg-[#3a5a40] text-white font-medium px-8 py-4 rounded-full transition-colors w-full md:w-auto">
               Book Intro Call
-            </button>
+            </Link>
           </div>
         </div>
       </section>

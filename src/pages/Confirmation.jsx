@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   CheckCircle2, 
   Video, 
@@ -8,9 +8,71 @@ import {
   Check, 
   CalendarClock 
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { MEET_LINK } from '../config/razorpay';
+
+// "Mon Oct 26 2026" + "07:00 PM" -> Date
+const parseSlot = (dateStr, timeStr) => {
+  const d = new Date(`${dateStr} ${timeStr}`);
+  return isNaN(d.getTime()) ? null : d;
+};
+const toIcsDate = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 
 const Confirmation = () => {
+  const navigate = useNavigate();
+  const [booking, setBooking] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('confirmedBooking');
+    if (stored) {
+      setBooking(JSON.parse(stored));
+    } else {
+      // Opened directly without a completed booking
+      navigate('/services', { replace: true });
+    }
+  }, [navigate]);
+
+  if (!booking) return null;
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(MEET_LINK);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt('Copy this link:', MEET_LINK);
+    }
+  };
+
+  const handleAddToCalendar = () => {
+    const start = parseSlot(booking.date, booking.time);
+    if (!start) return;
+    const duration = /insight/i.test(booking.serviceName) ? 90 : 60;
+    const end = new Date(start.getTime() + duration * 60000);
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Archi Counseling//EN',
+      'BEGIN:VEVENT',
+      `UID:${booking.paymentId}@archi-counseling`,
+      `DTSTAMP:${toIcsDate(new Date())}`,
+      `DTSTART:${toIcsDate(start)}`,
+      `DTEND:${toIcsDate(end)}`,
+      `SUMMARY:${booking.serviceName} - Archi Counseling`,
+      `DESCRIPTION:Join via Google Meet: ${MEET_LINK}`,
+      `LOCATION:${MEET_LINK}`,
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'archi-counseling-session.ics';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen bg-[#fcfbf9] pt-32 pb-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
@@ -28,6 +90,11 @@ const Confirmation = () => {
           Confirmation details have been sent to your email and WhatsApp. We look forward to seeing you at our scheduled time.
         </p>
 
+        <div className="w-full max-w-3xl mb-8 -mt-6 text-center text-sm text-gray-600">
+          <span className="font-medium text-gray-900">{booking.serviceName}</span> · {booking.date} at {booking.time}
+          <div className="text-xs text-gray-400 mt-1">Payment ID: {booking.paymentId}{booking.demo ? ' (demo - no payment taken)' : ''}</div>
+        </div>
+
         {/* Meeting Details Card */}
         <div className="w-full max-w-3xl bg-[#f8f5f0] border border-gray-100 rounded-[2rem] p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
           <div className="flex items-center gap-5 w-full md:w-auto">
@@ -39,22 +106,27 @@ const Confirmation = () => {
               <p className="text-xl font-medium text-gray-900">Google Meet Session</p>
             </div>
           </div>
-          <button className="w-full md:w-auto bg-[#4a5f46] hover:bg-[#3a5a40] text-white px-6 py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shrink-0">
+          <a
+            href={MEET_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full md:w-auto bg-[#4a5f46] hover:bg-[#3a5a40] text-white px-6 py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shrink-0"
+          >
             Join Google Meet Session
             <ExternalLink className="w-4 h-4" />
-          </button>
+          </a>
         </div>
 
         {/* Action Links */}
         <div className="flex items-center gap-6 mb-16">
-          <button className="flex items-center gap-2 text-sm font-medium text-[#8c7355] hover:text-[#7a6449] transition-colors">
+          <button onClick={handleAddToCalendar} className="flex items-center gap-2 text-sm font-medium text-[#8c7355] hover:text-[#7a6449] transition-colors">
             <CalendarPlus className="w-4 h-4" />
             Add to Calendar
           </button>
           <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-          <button className="flex items-center gap-2 text-sm font-medium text-[#8c7355] hover:text-[#7a6449] transition-colors">
+          <button onClick={handleCopyLink} className="flex items-center gap-2 text-sm font-medium text-[#8c7355] hover:text-[#7a6449] transition-colors">
             <Copy className="w-4 h-4" />
-            Copy Link
+            {copied ? 'Copied!' : 'Copy Link'}
           </button>
         </div>
 
@@ -99,9 +171,9 @@ const Confirmation = () => {
                 Life happens. If you need to change your appointment, please let us know at least 24 hours in advance.
               </p>
             </div>
-            <button className="w-full border border-white/30 hover:bg-white/10 text-white rounded-xl py-3.5 text-sm font-medium transition-colors">
+            <Link to="/contact" className="block text-center w-full border border-white/30 hover:bg-white/10 text-white rounded-xl py-3.5 text-sm font-medium transition-colors">
               Manage Appointment
-            </button>
+            </Link>
           </div>
 
         </div>

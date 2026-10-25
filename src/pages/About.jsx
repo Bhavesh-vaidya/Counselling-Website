@@ -1,4 +1,5 @@
 import React from 'react';
+import { asset } from '../utils/asset';
 import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 
 const About = () => {
@@ -12,7 +13,7 @@ const About = () => {
         {/* Left Image */}
         <div className="flex-1 w-full">
           <img 
-            src="/assets/counselor.jpg" 
+            src={asset('counselor.jpg')} 
             alt="Archi - Counselor and Psychologist" 
             className="w-full h-[600px] object-cover rounded-[2rem] shadow-lg"
           />
@@ -82,7 +83,7 @@ const About = () => {
           {/* Right Image with Floating Quote */}
           <div className="flex-1 relative w-full mt-10 md:mt-0">
             <img 
-              src="/assets/approach-hands.jpg" 
+              src={asset('approach-hands.jpg')} 
               alt="Therapist holding hands with client" 
               className="w-full h-[400px] object-cover rounded-3xl shadow-md"
             />

@@ -4,19 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Force Red Navigation and Green Selection */
+/* Calendar theme colours */
 .bg-white .react-calendar__navigation button {
-  color: red !important;
+  color: #3a5a40 !important;
   font-weight: bold !important;
 }
 
 .bg-white .react-calendar__tile--active {
-  background: green !important;
+  background: #3a5a40 !important;
   color: white !important;
   border-radius: 12px !important;
 }
 
 .bg-white .react-calendar__tile:hover {
-  background: lightgreen !important;
+  background: #e8f0e4 !important;
   border-radius: 12px !important;
 }

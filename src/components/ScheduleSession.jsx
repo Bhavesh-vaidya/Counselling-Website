@@ -23,13 +23,13 @@ const ScheduleSession = ({ serviceName, price, duration }) => {
   };
 
   return (
-    <div className="bg-white p-8 md:p-12 rounded-[2rem] border border-gray-100 shadow-xl max-w-4xl mx-auto my-12">
+    <div id="schedule-session" className="bg-white p-8 md:p-12 rounded-[2rem] border border-gray-100 shadow-xl max-w-4xl mx-auto my-12 scroll-mt-24">
       <h2 className="text-3xl font-serif text-gray-900 mb-8">Schedule your session</h2>
       
       <div className="grid md:grid-cols-2 gap-12 items-start">
         {/* Styled Calendar Container */}
         <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
-          <Calendar onChange={setDate} value={date} />
+          <Calendar onChange={setDate} value={date} minDate={new Date()} />
         </div>
 
         {/* Evening Slots */}

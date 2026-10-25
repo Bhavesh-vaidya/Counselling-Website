@@ -1,4 +1,5 @@
 import React from 'react';
+import { asset } from '../utils/asset';
 import ScheduleSession from '../components/ScheduleSession';
 import ContactSection from '../components/ContactSection';
 
@@ -19,7 +20,7 @@ const ServiceInsight = () => {
           </div>
         </div>
         <div className="flex-1 w-full">
-          <img src="/assets/service-insight-hero.jpg" alt="Therapy room dark armchair" className="w-full h-[450px] object-cover rounded-3xl shadow-lg" />
+          <img src={asset('service-insight-hero.jpg')} alt="Therapy room dark armchair" className="w-full h-[450px] object-cover rounded-3xl shadow-lg" />
         </div>
       </section>
 

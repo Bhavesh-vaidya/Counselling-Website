@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ShieldCheck, Smartphone, CreditCard, Circle, CheckCircle2, Check, Loader2 } from 'lucide-react';
+import { ShieldCheck, Check, Loader2, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import QRCode from 'react-qr-code';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase'; 
+import { db } from '../firebase';
+import { IS_DEMO } from '../config/razorpay';
+import { payWithRazorpay, simulateDemoPayment } from '../utils/razorpay';
 
 const Booking = () => {
   const navigate = useNavigate();
@@ -20,8 +21,11 @@ const Booking = () => {
     const storedData = sessionStorage.getItem('bookingData');
     if (storedData) {
       setSessionData(JSON.parse(storedData));
+    } else {
+      // Nothing selected (direct visit / refresh after payment) -> pick a service first
+      navigate('/services', { replace: true });
     }
-  }, []);
+  }, [navigate]);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -31,15 +35,11 @@ const Booking = () => {
     history: ''
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('upi');
   const [showPayment, setShowPayment] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
 
   const numericAmount = sessionData.price.replace(/[^0-9.]/g, '') || "0";
-  const upiId = "bhaveshvaidya2004@okhdfcbank";
-  const payeeName = "Anora Counseling";
-  const transactionNote = `Booking for ${sessionData.serviceName}`;
-  const upiUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${numericAmount}&cu=INR&tn=${encodeURIComponent(transactionNote)}`;
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -54,11 +54,20 @@ const Booking = () => {
   };
 
   const handleFinalPayment = async () => {
-    // 1. Trigger the full-screen overlay immediately
+    setPaymentError('');
     setIsSubmitting(true);
-    
+
     try {
-      // 2. Save data to Firestore
+      // 1. Take payment (Razorpay checkout, or a simulated payment in demo mode)
+      const payment = IS_DEMO
+        ? await simulateDemoPayment()
+        : await payWithRazorpay({
+            serviceName: sessionData.serviceName,
+            amount: numericAmount,
+            customer: { name: formData.fullName, email: formData.email },
+          });
+
+      // 2. Save booking to Firestore (only reached after the payment succeeded)
       await addDoc(collection(db, "bookings"), {
         ...formData,
         serviceName: sessionData.serviceName,
@@ -66,24 +75,34 @@ const Booking = () => {
         currency: "INR",
         bookingDate: sessionData.date,
         bookingTime: sessionData.time,
-        paymentMethod: paymentMethod,
-        paymentStatus: "Payment Completed", 
+        paymentMethod: "razorpay",
+        razorpayOrderId: payment.orderId,
+        razorpayPaymentId: payment.paymentId,
+        paymentStatus: IS_DEMO ? "Demo - Not Paid" : "Payment Completed",
         createdAt: serverTimestamp()
       });
 
-      // 3. Clear session storage and navigate to confirmation
+      // 3. Hand the details to the confirmation page and clear the cart
+      sessionStorage.setItem('confirmedBooking', JSON.stringify({
+        serviceName: sessionData.serviceName,
+        date: sessionData.date,
+        time: sessionData.time,
+        price: sessionData.price,
+        paymentId: payment.paymentId,
+        email: formData.email,
+        demo: IS_DEMO
+      }));
       sessionStorage.removeItem('bookingData');
-      
-      // Added a slight delay so the user actually sees the "Processing" screen 
-      // before it jumps to the next page instantly.
-      setTimeout(() => {
-        navigate('/confirmation');
-      }, 1500);
-      
+
+      navigate('/confirmation', { replace: true });
     } catch (error) {
-      console.error("Error saving booking to Firebase: ", error);
-      alert("There was an error processing your booking. Please try again.");
-      setIsSubmitting(false); // Remove overlay if it fails so they can try again
+      setIsSubmitting(false);
+      if (error.message === 'PAYMENT_CANCELLED') {
+        setPaymentError('Payment was cancelled. You can try again whenever you are ready.');
+        return;
+      }
+      console.error("Booking/payment error: ", error);
+      setPaymentError(error.message || 'There was an error processing your booking. Please try again.');
     }
   };
 
@@ -93,7 +112,7 @@ const Booking = () => {
       {isSubmitting && (
         <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center animate-in fade-in duration-300">
           <Loader2 className="w-12 h-12 text-[#3a5a40] animate-spin mb-6" />
-          <h2 className="text-3xl font-serif text-gray-900 mb-2">Processing payment...</h2>
+          <h2 className="text-3xl font-serif text-gray-900 mb-2">{IS_DEMO ? 'Processing demo payment...' : 'Processing payment...'}</h2>
           <p className="text-gray-500">Please do not close or refresh this window.</p>
         </div>
       )}
@@ -257,69 +276,27 @@ const Booking = () => {
                     <h2 className="text-2xl font-medium text-gray-900">Payment Method</h2>
                   </div>
 
-                  <div className="flex flex-col gap-4 mb-8">
-                    <div 
-                      onClick={() => setPaymentMethod('upi')}
-                      className={`border rounded-2xl p-4 flex items-center cursor-pointer transition-all ${
-                        paymentMethod === 'upi' ? 'border-[#3a5a40] bg-[#f8f5f0]/50' : 'border-gray-100 hover:border-gray-200'
-                      }`}
-                    >
-                      <Smartphone className="w-5 h-5 text-gray-500 mr-3" />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-800">UPI (GPay, PhonePe, Paytm)</p>
-                      </div>
-                      {paymentMethod === 'upi' ? <CheckCircle2 className="w-5 h-5 text-[#3a5a40]" /> : <Circle className="w-5 h-5 text-gray-300" />}
-                    </div>
-
-                    <div 
-                      onClick={() => setPaymentMethod('card')}
-                      className={`border rounded-2xl p-4 flex items-center cursor-pointer transition-all ${
-                        paymentMethod === 'card' ? 'border-[#3a5a40] bg-[#f8f5f0]/50' : 'border-gray-100 hover:border-gray-200'
-                      }`}
-                    >
-                      <CreditCard className="w-5 h-5 text-gray-500 mr-3" />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-800">Credit / Debit Card</p>
-                      </div>
-                      {paymentMethod === 'card' ? <CheckCircle2 className="w-5 h-5 text-[#3a5a40]" /> : <Circle className="w-5 h-5 text-gray-300" />}
-                    </div>
-                  </div>
-
-                  {paymentMethod === 'upi' && (
-                    <div className="flex flex-col items-center justify-center p-8 bg-[#fcfbf9] border border-gray-100 rounded-2xl mb-10">
-                      <p className="text-sm font-medium text-gray-700 mb-4 text-center">
-                        Scan with any UPI app to pay <br/><span className="text-2xl font-bold text-[#3a5a40]">{sessionData.price}</span>
-                      </p>
-                      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                        <QRCode value={upiUri} size={180} />
-                      </div>
-                      <p className="text-xs text-gray-500 mt-4 text-center">
-                        UPI ID: <span className="font-mono font-medium text-gray-700">{upiId}</span>
-                      </p>
+                  {IS_DEMO && (
+                    <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                      <strong>Demo mode:</strong> Razorpay keys are not configured yet, so no real payment will be taken.
                     </div>
                   )}
 
-                  {paymentMethod === 'card' && (
-                    <div className="flex flex-col gap-4 mb-10">
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1.5 ml-1">Card Number</label>
-                        <input 
-                          type="text" 
-                          placeholder="XXXX XXXX XXXX XXXX"
-                          className="w-full bg-[#fcfbf9] border border-gray-100 focus:border-[#3a5a40] focus:ring-0 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-300 outline-none tracking-widest"
-                        />
-                      </div>
-                      <div className="flex gap-4">
-                        <div className="flex-1">
-                          <label className="block text-xs text-gray-500 mb-1.5 ml-1">Expiry</label>
-                          <input type="text" placeholder="MM/YY" className="w-full bg-[#fcfbf9] border border-gray-100 focus:border-[#3a5a40] rounded-xl px-4 py-3 outline-none tracking-widest" />
-                        </div>
-                        <div className="flex-1">
-                          <label className="block text-xs text-gray-500 mb-1.5 ml-1">CVV</label>
-                          <input type="password" placeholder="•••" className="w-full bg-[#fcfbf9] border border-gray-100 focus:border-[#3a5a40] rounded-xl px-4 py-3 outline-none tracking-widest" />
-                        </div>
-                      </div>
+                  <div className="flex items-start gap-4 p-5 bg-[#fcfbf9] border border-gray-100 rounded-2xl mb-8">
+                    <Lock className="w-5 h-5 text-[#3a5a40] mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800 mb-1">Pay securely with Razorpay</p>
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        UPI (GPay, PhonePe, Paytm), Credit / Debit Cards, Net Banking and Wallets are all available
+                        in the secure Razorpay window. Your card details never touch our website.
+                      </p>
                     </div>
+                  </div>
+
+                  {paymentError && (
+                    <p role="alert" className="mb-6 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                      {paymentError}
+                    </p>
                   )}
 
                   <hr className="border-gray-100 mb-6" />
@@ -330,12 +307,13 @@ const Booking = () => {
                       <p className="text-2xl font-serif text-gray-900">{sessionData.price}</p>
                     </div>
                     
-                    {/* The new "I have completed payment" button */}
                     <button 
+                      type="button"
                       onClick={handleFinalPayment}
-                      className="bg-[#4a5f46] hover:bg-[#3a5a40] text-white px-8 py-3.5 rounded-xl font-medium transition-colors"
+                      disabled={isSubmitting}
+                      className="bg-[#4a5f46] hover:bg-[#3a5a40] disabled:opacity-60 text-white px-8 py-3.5 rounded-xl font-medium transition-colors"
                     >
-                      Complete Booking
+                      {IS_DEMO ? 'Complete Booking (Demo)' : `Pay ${sessionData.price}`}
                     </button>
                   </div>
                   

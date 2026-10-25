@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { asset } from '../utils/asset';
 import { Link } from 'react-router-dom'; // <-- 1. Imported Link here
 
 const Home = () => {
@@ -69,7 +70,7 @@ const Home = () => {
           <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#faebd7] rounded-full opacity-70 z-0"></div>
           
           <img 
-            src="/assets/hero-armchair.jpg" 
+            src={asset('hero-armchair.jpg')} 
             alt="Calming therapy space with green armchair" 
             className="relative z-10 w-full h-[500px] object-cover rounded-2xl shadow-lg"
           />

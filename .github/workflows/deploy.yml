@@ -27,6 +27,11 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+        env:
+          # Set these in GitHub -> Settings -> Secrets and variables -> Actions -> Variables
+          VITE_RAZORPAY_KEY_ID: ${{ vars.VITE_RAZORPAY_KEY_ID }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_MEET_LINK: ${{ vars.VITE_MEET_LINK }}
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact

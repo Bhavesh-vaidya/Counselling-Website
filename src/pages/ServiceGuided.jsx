@@ -1,4 +1,5 @@
 import React from 'react';
+import { asset } from '../utils/asset';
 import ScheduleSession from '../components/ScheduleSession';
 import ContactSection from '../components/ContactSection';
 
@@ -17,12 +18,12 @@ const ServiceGuided = () => {
             <span className="text-3xl font-bold text-[#1a1a1a]">₹1,800</span>
             <span className="text-[#555555] text-sm pb-1">/ per session (60 mins)</span>
           </div>
-          <button className="mt-4 bg-[#1a1a1a] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#333333] transition-colors">
+          <button onClick={() => document.getElementById('schedule-session')?.scrollIntoView({ behavior: 'smooth' })} className="mt-4 bg-[#1a1a1a] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#333333] transition-colors">
             SECURE YOUR SPOT
           </button>
         </div>
         <div className="flex-1 w-full">
-          <img src="/assets/service-guided-hero.jpg" alt="Therapy room" className="w-full h-[450px] object-cover rounded-3xl shadow-lg" />
+          <img src={asset('service-guided-hero.jpg')} alt="Therapy room" className="w-full h-[450px] object-cover rounded-3xl shadow-lg" />
         </div>
       </section>
 
