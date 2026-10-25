@@ -14,7 +14,7 @@ const About = () => {
         <div className="flex-1 w-full">
           <img 
             src={asset('counselor.jpg')} 
-            alt="Archi - Counselor and Psychologist" 
+            alt="Anora - Counselor and Psychologist" 
             className="w-full h-[600px] object-cover rounded-[2rem] shadow-lg"
           />
         </div>
@@ -51,7 +51,7 @@ const About = () => {
             <div>
               <h2 className="text-3xl md:text-4xl font-serif text-[#3a5a40] mb-4">My Approach</h2>
               <p className="text-[#555555] leading-relaxed">
-                Counseling at Archi isn't just about managing symptoms—it's about cultivating a deeper understanding of the self. My style is a blend of clinical precision and intuitive empathy.
+                Counseling at Anora isn't just about managing symptoms—it's about cultivating a deeper understanding of the self. My style is a blend of clinical precision and intuitive empathy.
               </p>
             </div>
 
@@ -97,12 +97,12 @@ const About = () => {
         </div>
       </section>
 
-      {/* 3. WHY CHOOSE ARCHI SECTION */}
+      {/* 3. WHY CHOOSE ANORA SECTION */}
       <section className="max-w-7xl mx-auto px-6 py-20 md:py-32 text-center">
         <span className="text-[#a68a64] text-xs font-bold tracking-widest uppercase mb-3 block">
           Your Safety Is Paramount
         </span>
-        <h2 className="text-3xl md:text-4xl font-serif text-[#1a1a1a] mb-16">Why Choose Archi</h2>
+        <h2 className="text-3xl md:text-4xl font-serif text-[#1a1a1a] mb-16">Why Choose Anora</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
           {/* Card 1 */}

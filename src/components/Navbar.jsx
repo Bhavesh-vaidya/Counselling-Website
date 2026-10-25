@@ -29,7 +29,7 @@ const Navbar = () => {
       <div className="px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="text-2xl font-serif text-[#3a5a40] font-bold cursor-pointer">
-          Archi
+          Anora
         </Link>
 
         {/* Center Links (desktop) */}

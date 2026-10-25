@@ -2,14 +2,19 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBn1wZZ0CJmZ9Rb0anaXars_HLJwjpUnMc",
-  authDomain: "archie-counseling.firebaseapp.com",
-  projectId: "archie-counseling",
-  storageBucket: "archie-counseling.firebasestorage.app",
-  messagingSenderId: "1037013903642",
-  appId: "1:1037013903642:web:b35a1ed52ac3e897de64a3",
-  measurementId: "G-MRTLR4Z76V"
+  apiKey: "AIzaSyAvrk9AJnWJYNz0PGYRS-7U5wBji_BhCGo",
+  authDomain: "anora-counseling.firebaseapp.com",
+  projectId: "anora-counseling",
+  storageBucket: "anora-counseling.firebasestorage.app",
+  messagingSenderId: "616415372893",
+  appId: "1:616415372893:web:389baaa85e808fa0020fb4",
+  measurementId: "G-2WRVR1CB6K"
 };
+
+// Dev only: shows in the browser console which Firebase project the site is using
+if (import.meta.env.DEV) {
+  console.info('Firebase project:', firebaseConfig.projectId);
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

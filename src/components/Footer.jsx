@@ -8,9 +8,9 @@ const Footer = () => {
         
         {/* Left Side: Brand and Copyright */}
         <div className="max-w-sm">
-          <h2 className="text-2xl font-serif text-[#3a5a40] font-bold mb-4">Archi</h2>
+          <h2 className="text-2xl font-serif text-[#3a5a40] font-bold mb-4">Anora</h2>
           <p className="text-[#555555] text-sm leading-relaxed">
-            © 2026 Archi Counseling. Cultivating tranquility through professional care.
+            © 2026 Anora Counseling. Cultivating tranquility through professional care.
           </p>
           <a href={`mailto:${BUSINESS_EMAIL}`} className="inline-block mt-3 text-sm text-[#3a5a40] hover:underline">
             {BUSINESS_EMAIL}

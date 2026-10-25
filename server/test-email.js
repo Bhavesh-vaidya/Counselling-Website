@@ -6,7 +6,7 @@ try {
   console.log('SMTP login OK');
   await sendMail({
     to: BUSINESS_EMAIL,
-    subject: 'Test email from Archi website server',
+    subject: 'Test email from Anora website server',
     text: 'If you can read this, email sending works.',
   });
   console.log(`Test email sent to ${BUSINESS_EMAIL} - check the inbox (and spam).`);

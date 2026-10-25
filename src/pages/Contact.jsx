@@ -43,7 +43,7 @@ const Contact = () => {
         <div className="flex flex-col md:flex-row gap-16 lg:gap-24 items-center">
           
           <div className="w-full md:w-1/2">
-            <h1 className="text-3xl md:text-4xl font-serif text-[#3a5a40] mb-6">Archi</h1>
+            <h1 className="text-3xl md:text-4xl font-serif text-[#3a5a40] mb-6">Anora</h1>
             <p className="text-gray-600 mb-12 text-lg leading-relaxed max-w-md">
               Cultivating tranquility through professional care.
             </p>

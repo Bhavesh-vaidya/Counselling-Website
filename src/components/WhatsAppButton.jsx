@@ -7,7 +7,7 @@ const WhatsAppButton = () => {
   const phoneNumber = "917208299488"; 
   
   // Optional: A default message that will populate in the user's chat box when they click
-  const message = "Hi Archi! I would like to know more about your counseling services.";
+  const message = "Hi Anora! I would like to know more about your counseling services.";
   
   // This automatically encodes the spaces and special characters for the URL
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;

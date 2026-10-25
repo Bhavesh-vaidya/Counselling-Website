@@ -53,13 +53,13 @@ const Confirmation = () => {
     const ics = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//Archi Counseling//EN',
+      'PRODID:-//Anora Counseling//EN',
       'BEGIN:VEVENT',
-      `UID:${booking.paymentId}@archi-counseling`,
+      `UID:${booking.paymentId}@anora-counseling`,
       `DTSTAMP:${toIcsDate(new Date())}`,
       `DTSTART:${toIcsDate(start)}`,
       `DTEND:${toIcsDate(end)}`,
-      `SUMMARY:${booking.serviceName} - Archi Counseling`,
+      `SUMMARY:${booking.serviceName} - Anora Counseling`,
       `DESCRIPTION:Join via Google Meet: ${MEET_LINK}`,
       `LOCATION:${MEET_LINK}`,
       'END:VEVENT',
@@ -68,7 +68,7 @@ const Confirmation = () => {
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'archi-counseling-session.ics';
+    a.download = 'anora-counseling-session.ics';
     a.click();
     URL.revokeObjectURL(url);
   };

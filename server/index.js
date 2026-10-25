@@ -254,7 +254,7 @@ app.listen(PORT, async () => {
   }
   try {
     await getTransporter().verify();
-    console.log(`Email OK (sending as ${process.env.EMAIL_USER || BUSINESS_EMAIL})`);
+    console.log(`Email OK (sending as ${BUSINESS_EMAIL})`);
   } catch (err) {
     console.error('EMAIL LOGIN FAILED:', explainMailError(err));
   }

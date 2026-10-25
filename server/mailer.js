@@ -1,9 +1,17 @@
 import './env.js';
 import nodemailer from 'nodemailer';
 
-// Single business inbox: receives every enquiry/booking and is the sender.
-export const BUSINESS_EMAIL = process.env.BUSINESS_EMAIL || 'anoracounseling@gmail.com';
-export const BRAND = 'Archi Counseling';
+// Single business inbox: receives every enquiry/booking AND is the sender.
+// Fixed in code on purpose so an old .env value can never misroute emails.
+export const BUSINESS_EMAIL = 'anoracounselling@gmail.com';
+
+if (process.env.EMAIL_USER && process.env.EMAIL_USER.toLowerCase() !== BUSINESS_EMAIL) {
+  console.warn(
+    `NOTE: EMAIL_USER in .env (${process.env.EMAIL_USER}) is ignored. ` +
+      `All emails are sent from and to ${BUSINESS_EMAIL}; EMAIL_PASS must be that account's app password.`
+  );
+}
+export const BRAND = 'Anora Counseling';
 
 let transporter;
 export const getTransporter = () => {
@@ -17,7 +25,7 @@ export const getTransporter = () => {
       port: 465,
       secure: true,
       auth: {
-        user: process.env.EMAIL_USER || BUSINESS_EMAIL,
+        user: BUSINESS_EMAIL,
         pass: (process.env.EMAIL_PASS || '').replace(/\s+/g, ''), // app password, spaces removed
       },
     });
@@ -29,7 +37,7 @@ export const mailConfigured = () => Boolean(process.env.EMAIL_PASS || process.en
 
 export const sendMail = async ({ to, subject, text, html, replyTo }) => {
   const info = await getTransporter().sendMail({
-    from: `"${BRAND}" <${process.env.EMAIL_USER || BUSINESS_EMAIL}>`,
+    from: `"${BRAND}" <${BUSINESS_EMAIL}>`,
     to,
     replyTo: replyTo || BUSINESS_EMAIL,
     subject,
@@ -42,7 +50,7 @@ export const sendMail = async ({ to, subject, text, html, replyTo }) => {
 
 export const explainMailError = (err) => {
   if (err?.code === 'EAUTH' || err?.responseCode === 535) {
-    return 'Gmail rejected the login. Check EMAIL_USER and that EMAIL_PASS is a 16-character Google App Password for that same account (2-Step Verification must be ON).';
+    return 'Gmail rejected the login. Check that EMAIL_PASS in server/.env is the 16-character Google App Password created in the anoracounselling@gmail.com account (2-Step Verification must be ON), with no extra characters.';
   }
   if (!process.env.EMAIL_PASS) return 'EMAIL_PASS is missing in server/.env.';
   return err?.message || String(err);

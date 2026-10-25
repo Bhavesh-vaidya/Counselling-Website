@@ -9,7 +9,7 @@ const Home = () => {
   // 2. Create the array of 3 testimonial records
   const testimonials = [
     {
-      quote: "Archi provided a space where I felt truly heard for the first time. The sessions helped me navigate a major life transition with a sense of calm I didn't know I possessed.",
+      quote: "Anora provided a space where I felt truly heard for the first time. The sessions helped me navigate a major life transition with a sense of calm I didn't know I possessed.",
       author: "Sarah M.",
       service: "Guided Counseling"
     },
@@ -19,7 +19,7 @@ const Home = () => {
       service: "Deep Insight"
     },
     {
-      quote: "The Emotional Clarity session was exactly what I needed when I felt completely overwhelmed. Archi's approach is warm, professional, and genuinely transformative.",
+      quote: "The Emotional Clarity session was exactly what I needed when I felt completely overwhelmed. Anora's approach is warm, professional, and genuinely transformative.",
       author: "Elena R.",
       service: "Emotional Clarity"
     }
@@ -48,7 +48,7 @@ const Home = () => {
             Your Journey to Emotional Strength Begins Here
           </h1>
           <p className="text-lg text-[#555555] leading-relaxed max-w-lg">
-            Hi, I'm Archi. I believe mental wellness is a collaborative journey. As your dedicated counselor, I provide a safe, tranquil space to help you navigate life's complexities and cultivate lasting emotional resilience.
+            Hi, I'm Anora. I believe mental wellness is a collaborative journey. As your dedicated counselor, I provide a safe, tranquil space to help you navigate life's complexities and cultivate lasting emotional resilience.
           </p>
           <div className="flex flex-wrap items-center gap-4 pt-4">
             

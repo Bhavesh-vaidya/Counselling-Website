@@ -8,7 +8,7 @@ shows the confirmation page. Nothing is charged.
 ```
 npm install
 npm run dev            # website
-cd server && npm install && cp .env.example .env   # fill EMAIL_USER / EMAIL_PASS
+cd server && npm install && cp .env.example .env   # fill EMAIL_PASS
 node index.js          # backend on :5000 (contact form + Razorpay)
 ```
 
@@ -41,17 +41,16 @@ Amounts are unchanged. The server keeps a copy in `SERVICE_PRICES`
 so if you ever change a price, change it in both places.
 
 
-## Email (business inbox: anoracounseling@gmail.com)
-All emails are sent FROM and delivered TO anoracounseling@gmail.com:
+## Email (business inbox: anoracounselling@gmail.com)
+All emails are sent FROM and delivered TO anoracounselling@gmail.com:
 - contact form -> business inbox (+ short auto-reply to the visitor)
 - every booking -> confirmation to the client + full booking/intake details to the business inbox
 
 One-time setup:
-1. Sign in to anoracounseling@gmail.com -> Google Account -> Security -> turn ON 2-Step Verification.
-2. Security -> App passwords -> create one (name it "Archi website"). Copy the 16 characters.
+1. Sign in to anoracounselling@gmail.com -> Google Account -> Security -> turn ON 2-Step Verification.
+2. Security -> App passwords -> create one (name it "Anora website"). Copy the 16 characters.
 3. Create `server/.env` (copy `server/.env.example`) and set:
    ```
-   EMAIL_USER=anoracounseling@gmail.com
    EMAIL_PASS=xxxx xxxx xxxx xxxx
    ```
 4. Start the server (`npm run server`) - the console prints `Email OK` or the exact problem.
