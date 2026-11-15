@@ -11,6 +11,8 @@
     "postbuild": "node scripts/copy-404.js",
     "server": "node server/index.js",
     "test-email": "node server/test-email.js",
+    "google-auth": "node server/google-auth.js",
+    "test-calendar": "node server/test-calendar.js",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

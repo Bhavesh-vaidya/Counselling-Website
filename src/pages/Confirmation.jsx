@@ -9,7 +9,7 @@ import {
   CalendarClock 
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MEET_LINK, BUSINESS_EMAIL } from '../config/razorpay';
+import { BUSINESS_EMAIL } from '../config/razorpay';
 
 // "Mon Oct 26 2026" + "07:00 PM" -> Date
 const parseSlot = (dateStr, timeStr) => {
@@ -35,20 +35,22 @@ const Confirmation = () => {
 
   if (!booking) return null;
 
+  const meetLink = booking.meetLink; // unique Google Meet link created for this booking (may be empty)
+
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(MEET_LINK);
+      await navigator.clipboard.writeText(meetLink);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      window.prompt('Copy this link:', MEET_LINK);
+      window.prompt('Copy this link:', meetLink);
     }
   };
 
   const handleAddToCalendar = () => {
     const start = parseSlot(booking.date, booking.time);
     if (!start) return;
-    const duration = /insight/i.test(booking.serviceName) ? 90 : 60;
+    const duration = booking.minutes || 60;
     const end = new Date(start.getTime() + duration * 60000);
     const ics = [
       'BEGIN:VCALENDAR',
@@ -60,8 +62,7 @@ const Confirmation = () => {
       `DTSTART:${toIcsDate(start)}`,
       `DTEND:${toIcsDate(end)}`,
       `SUMMARY:${booking.serviceName} - Anora Counseling`,
-      `DESCRIPTION:Join via Google Meet: ${MEET_LINK}`,
-      `LOCATION:${MEET_LINK}`,
+      ...(meetLink ? [`DESCRIPTION:Join via Google Meet: ${meetLink}`, `LOCATION:${meetLink}`] : []),
       'END:VEVENT',
       'END:VCALENDAR',
     ].join('\r\n');
@@ -91,7 +92,7 @@ const Confirmation = () => {
         </p>
 
         <div className="w-full max-w-3xl mb-8 -mt-6 text-center text-sm text-gray-600">
-          <span className="font-medium text-gray-900">{booking.serviceName}</span> · {booking.date} at {booking.time}
+          <span className="font-medium text-gray-900">{booking.serviceName}</span> · {booking.date} at {booking.time}{booking.minutes ? ` · ${booking.minutes} min` : ''}
           <div className="text-xs text-gray-400 mt-1">Payment ID: {booking.paymentId}{booking.demo ? ' (demo - no payment taken)' : ''}</div>
         </div>
 
@@ -106,15 +107,21 @@ const Confirmation = () => {
               <p className="text-xl font-medium text-gray-900">Google Meet Session</p>
             </div>
           </div>
-          <a
-            href={MEET_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full md:w-auto bg-[#4a5f46] hover:bg-[#3a5a40] text-white px-6 py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shrink-0"
-          >
-            Join Google Meet Session
-            <ExternalLink className="w-4 h-4" />
-          </a>
+          {meetLink ? (
+            <a
+              href={meetLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full md:w-auto bg-[#4a5f46] hover:bg-[#3a5a40] text-white px-6 py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shrink-0"
+            >
+              Join Google Meet Session
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          ) : (
+            <p className="text-sm text-gray-600 md:max-w-[16rem] text-center md:text-left">
+              Your Google Meet link will be emailed to you shortly.
+            </p>
+          )}
         </div>
 
         {/* Action Links */}
@@ -123,11 +130,15 @@ const Confirmation = () => {
             <CalendarPlus className="w-4 h-4" />
             Add to Calendar
           </button>
-          <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-          <button onClick={handleCopyLink} className="flex items-center gap-2 text-sm font-medium text-[#8c7355] hover:text-[#7a6449] transition-colors">
-            <Copy className="w-4 h-4" />
-            {copied ? 'Copied!' : 'Copy Link'}
-          </button>
+          {meetLink && (
+            <>
+            <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+            <button onClick={handleCopyLink} className="flex items-center gap-2 text-sm font-medium text-[#8c7355] hover:text-[#7a6449] transition-colors">
+              <Copy className="w-4 h-4" />
+              {copied ? 'Copied!' : 'Copy Link'}
+            </button>
+            </>
+          )}
         </div>
 
         {/* Bottom Cards Grid */}

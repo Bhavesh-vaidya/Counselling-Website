@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { fetchTakenSlots } from '../utils/slots';
+import { fetchTakenSlots, SLOT_TIMES } from '../utils/slots';
 
-const ScheduleSession = ({ serviceName, price, duration }) => {
+const ScheduleSession = ({ serviceName, price, duration, minutes = 60, slots = SLOT_TIMES }) => {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState('');
   const navigate = useNavigate();
 
-  const timeSlots = ["06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM"];
+  const timeSlots = slots; // start times offered for this particular service
 
   // Slots already booked/being paid for by other people on the selected day
   const [taken, setTaken] = useState(new Set());
@@ -19,7 +19,7 @@ const ScheduleSession = ({ serviceName, price, duration }) => {
     let cancelled = false;
     setLoadingSlots(true);
     setTime(''); // a previously chosen time may not exist on the new day
-    fetchTakenSlots(date)
+    fetchTakenSlots(date, minutes)
       .then((set) => { if (!cancelled) setTaken(set); })
       .catch((err) => {
         console.error('Could not load booked slots:', err);
@@ -27,7 +27,7 @@ const ScheduleSession = ({ serviceName, price, duration }) => {
       })
       .finally(() => { if (!cancelled) setLoadingSlots(false); });
     return () => { cancelled = true; };
-  }, [date]);
+  }, [date, minutes]);
 
   // Today's slots whose time has already passed
   const isPast = (slot) => {
@@ -41,6 +41,7 @@ const ScheduleSession = ({ serviceName, price, duration }) => {
       serviceName, 
       price, 
       duration, 
+      minutes, 
       date: date.toDateString(), 
       time 
     }));
@@ -99,7 +100,7 @@ const ScheduleSession = ({ serviceName, price, duration }) => {
 
       <div className="mt-10 pt-8 border-t border-gray-100 flex justify-between items-center">
         <div>
-          <p className="text-sm text-gray-500">{serviceName}</p>
+          <p className="text-sm text-gray-500">{serviceName}{duration ? ` · ${duration}` : ''}</p>
           <p className="text-2xl font-bold text-gray-900">{price}</p>
         </div>
         <button 

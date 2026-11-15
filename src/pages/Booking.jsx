@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ShieldCheck, Check, Loader2, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { holdSlot, confirmBookingWithSlot } from '../utils/slots';
+import { holdSlot, releaseHold, confirmBookingWithSlot } from '../utils/slots';
 import { sendBookingEmail } from '../utils/email';
 import { IS_DEMO, BUSINESS_EMAIL } from '../config/razorpay';
 import { payWithRazorpay, simulateDemoPayment } from '../utils/razorpay';
@@ -40,6 +40,7 @@ const Booking = () => {
   const [paymentError, setPaymentError] = useState('');
   const [slotLost, setSlotLost] = useState(false);
 
+  const minutes = Number(sessionData.minutes) || parseInt(sessionData.duration, 10) || 60;
   const numericAmount = sessionData.price.replace(/[^0-9.]/g, '') || "0";
 
   const handleInputChange = (e) => {
@@ -62,7 +63,7 @@ const Booking = () => {
 
     try {
       // 0. Reserve the date/time so nobody else can book it while we pay
-      await holdSlot(sessionData.date, sessionData.time);
+      await holdSlot(sessionData.date, sessionData.time, minutes);
 
       // 1. Take payment (Razorpay checkout, or a simulated payment in demo mode)
       payment = IS_DEMO
@@ -74,22 +75,23 @@ const Booking = () => {
           });
 
       // 2. Mark slot as booked + save booking to Firestore (atomic)
-      await confirmBookingWithSlot(sessionData.date, sessionData.time, {
+      await confirmBookingWithSlot(sessionData.date, sessionData.time, minutes, {
         ...formData,
         serviceName: sessionData.serviceName,
         amount: numericAmount,
         currency: "INR",
         bookingDate: sessionData.date,
         bookingTime: sessionData.time,
+        durationMinutes: minutes,
         paymentMethod: "razorpay",
         razorpayOrderId: payment.orderId,
         razorpayPaymentId: payment.paymentId,
         paymentStatus: IS_DEMO ? "Demo - Not Paid" : "Payment Completed"
       });
 
-      // 3. Emails (client + business inbox). Runs in background; a mail problem
-      //    must never undo a successful booking.
-      sendBookingEmail({
+      // 3. Server creates the Google Meet link for this date/time and emails the
+      //    client + business inbox. A problem here must never undo the booking.
+      const emailResult = await sendBookingEmail({
         ...formData,
         serviceName: sessionData.serviceName,
         date: sessionData.date,
@@ -104,6 +106,8 @@ const Booking = () => {
         date: sessionData.date,
         time: sessionData.time,
         price: sessionData.price,
+        minutes,
+        meetLink: emailResult.meetLink,
         paymentId: payment.paymentId,
         email: formData.email,
         demo: IS_DEMO
@@ -113,6 +117,10 @@ const Booking = () => {
       navigate('/confirmation', { replace: true });
     } catch (error) {
       setIsSubmitting(false);
+      // Payment did not happen: free the reserved slot straight away
+      if (!payment && error.message !== 'SLOT_TAKEN') {
+        releaseHold(sessionData.date, sessionData.time).catch(() => {});
+      }
       if (error.message === 'SLOT_TAKEN') {
         if (payment) {
           // Extremely rare: paid, but the slot was taken in the meantime
@@ -139,7 +147,7 @@ const Booking = () => {
         <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center animate-in fade-in duration-300">
           <Loader2 className="w-12 h-12 text-[#3a5a40] animate-spin mb-6" />
           <h2 className="text-3xl font-serif text-gray-900 mb-2">{IS_DEMO ? 'Processing demo payment...' : 'Processing payment...'}</h2>
-          <p className="text-gray-500">Please do not close or refresh this window.</p>
+          <p className="text-gray-500">Please do not close or refresh this window. We are confirming your booking and setting up your Google Meet link.</p>
         </div>
       )}
 
@@ -157,7 +165,7 @@ const Booking = () => {
               <div className="bg-[#f0f4f1] border border-[#d2e0d5] rounded-2xl p-5 mb-8">
                 <span className="text-[10px] font-bold text-[#3a5a40] uppercase tracking-wider">Selected Session</span>
                 <h4 className="text-lg font-medium text-gray-900 mt-1">{sessionData.serviceName}</h4>
-                <p className="text-sm text-gray-600 mt-1">{sessionData.date} at {sessionData.time}</p>
+                <p className="text-sm text-gray-600 mt-1">{sessionData.date} at {sessionData.time}{sessionData.duration ? ` · ${sessionData.duration}` : ''}</p>
               </div>
 
               <div className="flex flex-col gap-6 mb-10 relative">

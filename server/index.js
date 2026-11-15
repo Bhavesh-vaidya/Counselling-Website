@@ -9,6 +9,7 @@ import {
   explainMailError,
   getTransporter,
 } from './mailer.js';
+import { calendarConfigured, calendarMode, createMeetEvent } from './calendar.js';
 import {
   clientBookingEmail,
   businessBookingEmail,
@@ -49,19 +50,21 @@ const clip = (v, n) => String(v ?? '').slice(0, n);
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
-// Prices live here too so the browser can never choose its own amount.
-// Keep in sync with the service pages (₹ rupees).
-const SERVICE_PRICES = {
-  'Emotional Clarity Session': 1500,
-  'Guided Counseling Session': 1800,
-  'Deep Insight Session': 2500,
+// Prices and session lengths live here too so the browser can never choose its
+// own amount or duration. Keep in sync with src/data/services.js (₹ rupees).
+const SERVICES = {
+  'Emotional Clarity Session': { price: 349, minutes: 45, slots: ['06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM'] },
+  'Guided Counseling Session': { price: 649, minutes: 75, slots: ['06:00 PM', '08:00 PM'] },
+  'Deep Insight Session': { price: 859, minutes: 90, slots: ['06:00 PM', '08:00 PM'] },
 };
+const SERVICE_PRICES = Object.fromEntries(Object.entries(SERVICES).map(([n, v]) => [n, v.price]));
 
 app.get('/health', (_req, res) => {
   res.json({
     ok: true,
     razorpayConfigured: Boolean(RAZORPAY_KEY_ID && RAZORPAY_KEY_SECRET),
     emailConfigured: mailConfigured(),
+    googleMeetConfigured: calendarConfigured(),
     businessEmail: BUSINESS_EMAIL,
   });
 });
@@ -143,7 +146,6 @@ app.post('/verify-payment', (req, res) => {
 // ---------------------------------------------------------------------------
 // Booking confirmation emails (client + business inbox)
 // ---------------------------------------------------------------------------
-const MEET_LINK = process.env.MEET_LINK || 'https://meet.google.com/demo-link-here';
 const REAL_KEYS = Boolean(
   RAZORPAY_KEY_ID && RAZORPAY_KEY_SECRET && !/DEMO/i.test(RAZORPAY_KEY_ID)
 );
@@ -168,6 +170,49 @@ const paymentIsGenuine = async ({ paymentId, orderId, serviceName }) => {
   );
 };
 
+// Each payment is processed once: a retry/double-click gets the same answer and
+// never creates a second calendar event or a second email.
+const processed = new Map();
+
+const processBooking = async (b) => {
+  // 1) Unique Google Meet link for the exact date/time the client booked
+  b.meetLink = null;
+  if (calendarConfigured()) {
+    try {
+      const { meetLink } = await createMeetEvent({
+        summary: `${b.serviceName} - ${b.fullName}`,
+        description: `Client: ${b.fullName}\nEmail: ${b.email}\nPayment ID: ${b.paymentId}\nBooked via the Anora website.`,
+        dateStr: b.date,
+        timeStr: b.time,
+        minutes: b.minutes,
+        requestId: b.paymentId,
+      });
+      b.meetLink = meetLink;
+    } catch (err) {
+      console.error('GOOGLE MEET LINK FAILED:', err.message);
+    }
+  } else {
+    console.warn('Google Calendar is not configured - sending the booking email without a Meet link.');
+  }
+
+  // 2) Emails: client first (with the link), business inbox second. One failing must not hide the other.
+  const results = await Promise.allSettled([
+    sendMail({ to: b.email, ...clientBookingEmail(b) }),
+    sendMail({ to: BUSINESS_EMAIL, replyTo: b.email, ...businessBookingEmail(b) }),
+  ]);
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') {
+      console.error(`BOOKING EMAIL (${i === 0 ? 'client' : 'business'}) FAILED:`, explainMailError(r.reason));
+    }
+  });
+
+  return {
+    meetLink: b.meetLink,
+    clientEmailSent: results[0].status === 'fulfilled',
+    businessEmailSent: results[1].status === 'fulfilled',
+  };
+};
+
 app.post('/booking-confirmation', rateLimit(10, 10 * 60 * 1000), async (req, res) => {
   const body = req.body || {};
   const b = {
@@ -184,10 +229,11 @@ app.post('/booking-confirmation', rateLimit(10, 10 * 60 * 1000), async (req, res
     demo: !REAL_KEYS,
   };
 
-  if (!b.fullName || !isEmail(b.email) || !SERVICE_PRICES[b.serviceName] || !b.date || !b.time) {
+  if (!b.fullName || !isEmail(b.email) || !SERVICES[b.serviceName] || !b.date || !SERVICES[b.serviceName]?.slots.includes(b.time)) {
     return res.status(400).json({ error: 'Invalid booking details.' });
   }
-  b.price = `₹${SERVICE_PRICES[b.serviceName].toLocaleString('en-IN')}`;
+  b.price = `₹${SERVICES[b.serviceName].price.toLocaleString('en-IN')}`;
+  b.minutes = SERVICES[b.serviceName].minutes;
 
   try {
     if (!(await paymentIsGenuine(b))) {
@@ -198,23 +244,12 @@ app.post('/booking-confirmation', rateLimit(10, 10 * 60 * 1000), async (req, res
     return res.status(502).json({ error: 'Could not verify payment.' });
   }
 
-  // Send both; one failing must not hide the other.
-  const results = await Promise.allSettled([
-    sendMail({ to: b.email, ...clientBookingEmail(b, MEET_LINK) }),
-    sendMail({ to: BUSINESS_EMAIL, replyTo: b.email, ...businessBookingEmail(b) }),
-  ]);
-  results.forEach((r, i) => {
-    if (r.status === 'rejected') {
-      console.error(`BOOKING EMAIL (${i === 0 ? 'client' : 'business'}) FAILED:`, explainMailError(r.reason));
-    }
-  });
+  if (!processed.has(b.paymentId)) processed.set(b.paymentId, processBooking(b));
+  const result = await processed.get(b.paymentId);
 
-  const ok = results.some((r) => r.status === 'fulfilled');
-  res.status(ok ? 200 : 500).json({
-    clientEmailSent: results[0].status === 'fulfilled',
-    businessEmailSent: results[1].status === 'fulfilled',
-    ...(ok ? {} : { error: 'Email could not be sent.' }),
-  });
+  const ok = result.clientEmailSent || result.businessEmailSent;
+  if (!ok) processed.delete(b.paymentId); // allow a later retry
+  res.status(ok ? 200 : 500).json({ ...result, ...(ok ? {} : { error: 'Email could not be sent.' }) });
 });
 
 // ---------------------------------------------------------------------------
@@ -255,6 +290,7 @@ app.listen(PORT, async () => {
   try {
     await getTransporter().verify();
     console.log(`Email OK (sending as ${BUSINESS_EMAIL})`);
+    console.log(calendarConfigured() ? `Google Meet links: ON (${calendarMode()})` : 'Google Meet links: OFF (see SETUP.md, "Google Meet links")');
   } catch (err) {
     console.error('EMAIL LOGIN FAILED:', explainMailError(err));
   }
