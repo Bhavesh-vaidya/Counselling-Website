@@ -38,7 +38,11 @@ Payment ID: ${b.paymentId}
 
 ${b.meetLink ? `Join via Google Meet: ${b.meetLink}\n(When you click the link you may see "Ask to join" - we will admit you at your session time.)` : 'Your Google Meet link will be emailed to you shortly.'}
 
+<<<<<<< HEAD
 Questions about your booking? Write to ${BUSINESS_EMAIL}.
+=======
+Need to reschedule? Please let us know at least 24 hours in advance by writing to ${BUSINESS_EMAIL}.
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
 
 ${BRAND}`,
   html: wrap('Your session is confirmed', `
@@ -50,7 +54,11 @@ ${BRAND}`,
       ? `<p style="margin:24px 0 8px"><a href="${esc(b.meetLink)}" style="background:#4a5f46;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Join Google Meet Session</a></p>
          <p style="font-size:12px;color:#888;margin-top:0">Link: <a href="${esc(b.meetLink)}" style="color:#3a5a40">${esc(b.meetLink)}</a><br>When you click it you may see "Ask to join" - we will admit you at your session time.</p>`
       : `<p style="margin:24px 0;color:#555">Your Google Meet link will be emailed to you shortly.</p>`}
+<<<<<<< HEAD
     <p style="font-size:14px;color:#555">Please find a quiet, private space and make sure your internet connection is stable.<br>Questions about your booking? Just reply to this email.</p>
+=======
+    <p style="font-size:14px;color:#555">Please find a quiet, private space and make sure your internet connection is stable.<br>Need to reschedule? Let us know at least 24 hours in advance by replying to this email.</p>
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
     ${b.demo ? '<p style="font-size:12px;color:#b45309">Demo booking - no payment was taken.</p>' : ''}`),
 });
 

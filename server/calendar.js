@@ -11,11 +11,16 @@ const TOKEN_URL = process.env.GOOGLE_TOKEN_URL || 'https://oauth2.googleapis.com
 const API_BASE = process.env.GOOGLE_API_BASE || 'https://www.googleapis.com/calendar/v3';
 export const TIMEZONE = 'Asia/Kolkata';
 
+<<<<<<< HEAD
 const scriptUrl = () => (process.env.GOOGLE_SCRIPT_URL || '').trim();
 const scriptSecret = () => (process.env.GOOGLE_SCRIPT_SECRET || '').trim();
 
 export const calendarMode = () => {
   if (scriptUrl() && scriptSecret()) return 'script';
+=======
+export const calendarMode = () => {
+  if (process.env.GOOGLE_SCRIPT_URL && process.env.GOOGLE_SCRIPT_SECRET) return 'script';
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN) return 'oauth';
   return null;
 };
@@ -68,6 +73,7 @@ const withTimeout = (promise, ms, label) =>
   Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error(`${label} timed out`)), ms))]);
 
 // ---- Apps Script mode ------------------------------------------------------
+<<<<<<< HEAD
 export const callScript = async (payload, timeoutMs = 18_000) => {
   const res = await withTimeout(
     fetch(scriptUrl(), {
@@ -77,6 +83,17 @@ export const callScript = async (payload, timeoutMs = 18_000) => {
       redirect: 'follow', // Apps Script answers through a redirect
     }),
     timeoutMs,
+=======
+const callScript = async (payload) => {
+  const res = await withTimeout(
+    fetch(process.env.GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ secret: process.env.GOOGLE_SCRIPT_SECRET, ...payload }),
+      redirect: 'follow', // Apps Script answers through a redirect
+    }),
+    18_000,
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
     'Google Apps Script'
   );
   const text = await res.text();
@@ -92,11 +109,14 @@ export const callScript = async (payload, timeoutMs = 18_000) => {
   return data;
 };
 
+<<<<<<< HEAD
 // ONE call that creates the calendar event (with Meet link) AND sends the booking emails.
 // Used on hosts with short function time limits (Netlify free plan = 10 s): the script keeps
 // running on Google's side even if our function stops waiting for it.
 export const bookingViaScript = (payload, timeoutMs) => callScript({ action: 'booking', ...payload }, timeoutMs);
 
+=======
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
 const createViaScript = async ({ summary, description, dateStr, timeStr, minutes, requestId }) => {
   const data = await callScript({
     action: 'create',

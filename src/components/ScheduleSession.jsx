@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { fetchTakenSlots, SLOT_TIMES } from '../utils/slots';
+<<<<<<< HEAD
 import { BOOKINGS_OPEN, BUSINESS_EMAIL } from '../config/razorpay';
+=======
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
 
 const ScheduleSession = ({ serviceName, price, duration, minutes = 60, slots = SLOT_TIMES }) => {
   const [date, setDate] = useState(new Date());

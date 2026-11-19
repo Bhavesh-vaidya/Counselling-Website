@@ -13,8 +13,14 @@
     "test-email": "node server/test-email.js",
     "google-auth": "node server/google-auth.js",
     "test-calendar": "node server/test-calendar.js",
+<<<<<<< HEAD
     "test-booking": "node server/test-booking.js",
     "preview": "vite preview"
+=======
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
   },
   "keywords": [],
   "author": "",

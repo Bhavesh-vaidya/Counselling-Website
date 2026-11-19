@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ShieldCheck, Check, Loader2, Lock } from 'lucide-react';
+<<<<<<< HEAD
 import { useNavigate, Link } from 'react-router-dom';
+=======
+import { useNavigate } from 'react-router-dom';
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
 import { holdSlot, releaseHold, confirmBookingWithSlot } from '../utils/slots';
 import { sendBookingEmail } from '../utils/email';
 import { IS_DEMO, BUSINESS_EMAIL, BOOKINGS_OPEN } from '../config/razorpay';

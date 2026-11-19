@@ -6,7 +6,10 @@ if (!calendarConfigured()) {
   console.error('Google Calendar is not set up yet. Add GOOGLE_SCRIPT_URL and GOOGLE_SCRIPT_SECRET to server/.env (see SETUP.md, "Google Meet links").');
   process.exit(1);
 }
+<<<<<<< HEAD
 console.log(`Using script secret of ${(process.env.GOOGLE_SCRIPT_SECRET || '').trim().length} characters from server/.env`);
+=======
+>>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
 try {
   const tomorrow = new Date(Date.now() + 24 * 3600 * 1000).toDateString();
   const { eventId, meetLink } = await createMeetEvent({
