@@ -2,8 +2,10 @@ import React from 'react';
 import { asset } from '../utils/asset';
 import ScheduleSession from '../components/ScheduleSession';
 import ContactSection from '../components/ContactSection';
+import { SERVICES, formatPrice } from '../data/services';
 
 const ServiceInsight = () => {
+  const svc = SERVICES.insight;
   return (
     <div className="w-full bg-[#fcfbf9] text-[#333333] font-sans">
       {/* Hero Section */}
@@ -12,12 +14,13 @@ const ServiceInsight = () => {
           <span className="text-[#888888] text-xs font-bold tracking-widest uppercase block">Core Therapeutic Service</span>
           <h1 className="text-4xl md:text-5xl font-serif text-[#1a1a1a]">Deep Insight Session</h1>
           <p className="text-[#555555] leading-relaxed max-w-md">
-            For those seeking to understand deep emotional patterns, past experiences, and core triggers. A profound journey into the self to foster lasting change.
+            {svc.description}
           </p>
           <div className="flex items-end gap-2 pt-2">
-            <span className="text-3xl font-bold text-[#1a1a1a]">₹2,500</span>
-            <span className="text-[#555555] text-sm pb-1">/ per session (90 mins)</span>
+            <span className="text-3xl font-bold text-[#1a1a1a]">{formatPrice(svc.price)}</span>
+            <span className="text-[#555555] text-sm pb-1">/ per {svc.minutes} min session</span>
           </div>
+          <p className="text-sm text-[#555555]"><span className="font-semibold text-[#3a5a40]">Best for:</span> {svc.bestFor}</p>
         </div>
         <div className="flex-1 w-full">
           <img src={asset('service-insight-hero.jpg')} alt="Therapy room dark armchair" className="w-full h-[450px] object-cover rounded-3xl shadow-lg" />
@@ -53,7 +56,7 @@ const ServiceInsight = () => {
 
       {/* Shared Components */}
       <section className="px-6">
-        <ScheduleSession serviceName="Deep Insight Session" price="₹2,500" duration="90 Minutes" />
+        <ScheduleSession serviceName={svc.name} price={formatPrice(svc.price)} duration={`${svc.minutes} Minutes`} minutes={svc.minutes} slots={svc.slots} />
       </section>
       <ContactSection />
     </div>

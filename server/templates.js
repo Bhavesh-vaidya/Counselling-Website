@@ -21,30 +21,36 @@ const wrap = (title, inner) => `
 const row = (label, value) =>
   `<tr><td style="padding:6px 12px 6px 0;color:#888;vertical-align:top;white-space:nowrap">${esc(label)}</td><td style="padding:6px 0;color:#1a1a1a">${esc(value)}</td></tr>`;
 
-export const clientBookingEmail = (b, meetLink) => ({
+const durationText = (b) => (b.minutes ? `${b.minutes} minutes` : '');
+
+export const clientBookingEmail = (b) => ({
   subject: `${b.demo ? '[DEMO] ' : ''}Your session is confirmed - ${b.serviceName}`,
   text: `Hi ${b.fullName},
 
 Your session is confirmed.
 
 Service: ${b.serviceName}
+Duration: ${durationText(b)}
 Date: ${b.date}
-Time: ${b.time}
+Time: ${b.time} (IST)
 Amount: ${b.price}
 Payment ID: ${b.paymentId}
 
-Join via Google Meet: ${meetLink}
+${b.meetLink ? `Join via Google Meet: ${b.meetLink}\n(When you click the link you may see "Ask to join" - we will admit you at your session time.)` : 'Your Google Meet link will be emailed to you shortly.'}
 
-Need to reschedule? Please let us know at least 24 hours in advance by replying to this email or writing to ${BUSINESS_EMAIL}.
+Questions about your booking? Write to ${BUSINESS_EMAIL}.
 
 ${BRAND}`,
   html: wrap('Your session is confirmed', `
     <p>Hi ${esc(b.fullName)}, thank you for booking. Here are your details:</p>
     <table style="font-size:14px;border-collapse:collapse">
-      ${row('Service', b.serviceName)}${row('Date', b.date)}${row('Time', b.time)}${row('Amount', b.price)}${row('Payment ID', b.paymentId)}
+      ${row('Service', b.serviceName)}${row('Duration', durationText(b))}${row('Date', b.date)}${row('Time', `${b.time} (IST)`)}${row('Amount', b.price)}${row('Payment ID', b.paymentId)}
     </table>
-    <p style="margin:24px 0"><a href="${esc(meetLink)}" style="background:#4a5f46;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Join Google Meet Session</a></p>
-    <p style="font-size:14px;color:#555">Please find a quiet, private space and make sure your internet connection is stable.<br>Need to reschedule? Let us know at least 24 hours in advance by replying to this email.</p>
+    ${b.meetLink
+      ? `<p style="margin:24px 0 8px"><a href="${esc(b.meetLink)}" style="background:#4a5f46;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Join Google Meet Session</a></p>
+         <p style="font-size:12px;color:#888;margin-top:0">Link: <a href="${esc(b.meetLink)}" style="color:#3a5a40">${esc(b.meetLink)}</a><br>When you click it you may see "Ask to join" - we will admit you at your session time.</p>`
+      : `<p style="margin:24px 0;color:#555">Your Google Meet link will be emailed to you shortly.</p>`}
+    <p style="font-size:14px;color:#555">Please find a quiet, private space and make sure your internet connection is stable.<br>Questions about your booking? Just reply to this email.</p>
     ${b.demo ? '<p style="font-size:12px;color:#b45309">Demo booking - no payment was taken.</p>' : ''}`),
 });
 
@@ -52,12 +58,13 @@ export const businessBookingEmail = (b) => ({
   subject: `${b.demo ? '[DEMO] ' : ''}New booking: ${b.serviceName} - ${b.fullName} (${b.date}, ${b.time})`,
   text: `New booking received
 
-Service: ${b.serviceName}
+Service: ${b.serviceName} (${durationText(b)})
 Date: ${b.date}
-Time: ${b.time}
+Time: ${b.time} (IST)
 Amount: ${b.price}
 Payment ID: ${b.paymentId}
 Order ID: ${b.orderId}
+Meet link: ${b.meetLink || 'NOT CREATED - please send the client a link manually'}
 
 Client: ${b.fullName} (age ${b.age})
 Email: ${b.email}
@@ -70,8 +77,9 @@ ${b.history || '-'}
 ${b.demo ? '\n(DEMO booking - no payment taken)' : ''}`,
   html: wrap('New booking received', `
     <table style="font-size:14px;border-collapse:collapse">
-      ${row('Service', b.serviceName)}${row('Date', b.date)}${row('Time', b.time)}${row('Amount', b.price)}
+      ${row('Service', `${b.serviceName} (${durationText(b)})`)}${row('Date', b.date)}${row('Time', `${b.time} (IST)`)}${row('Amount', b.price)}
       ${row('Payment ID', b.paymentId)}${row('Order ID', b.orderId)}
+      ${row('Meet link', b.meetLink || 'NOT CREATED - please send the client a link manually')}
       ${row('Client', `${b.fullName} (age ${b.age})`)}${row('Email', b.email)}
     </table>
     <p style="margin-bottom:4px"><strong>Primary concerns</strong></p><p style="margin-top:0">${esc(b.concerns)}</p>

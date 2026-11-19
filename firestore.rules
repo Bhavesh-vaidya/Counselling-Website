@@ -14,10 +14,10 @@ service cloud.firestore {
     // A "booked" slot can never be changed; "held" slots can be re-held or booked.
     match /slots/{slotId} {
       allow read: if true;
-      allow create: if request.resource.data.keys().hasOnly(['date','time','status','holderId','expiresAt','createdAt'])
+      allow create: if request.resource.data.keys().hasOnly(['date','time','startMin','endMin','status','holderId','expiresAt','createdAt'])
                     && request.resource.data.status in ['held','booked'];
       allow update: if resource.data.status == 'held'
-                    && request.resource.data.keys().hasOnly(['date','time','status','holderId','expiresAt','createdAt'])
+                    && request.resource.data.keys().hasOnly(['date','time','startMin','endMin','status','holderId','expiresAt','createdAt'])
                     && request.resource.data.status in ['held','booked'];
       allow delete: if false;
     }

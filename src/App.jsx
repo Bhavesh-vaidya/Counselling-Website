@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 import Navbar from './components/Navbar';
@@ -13,10 +13,19 @@ import ServiceGuided from './pages/ServiceGuided';
 import ServiceInsight from './pages/ServiceInsight';
 import Booking from './pages/Booking';
 import Confirmation from './pages/Confirmation';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import RefundPolicy from './pages/RefundPolicy';
+import { wakeServer } from './utils/server';
 
 function App() {
+  // The free server host goes to sleep when idle: wake it as soon as the site opens
+  useEffect(() => {
+    wakeServer();
+  }, []);
+
   return (
-    <Router basename="/Counselling-Website">
+    <Router>
       <ScrollToTop />
       <div className="min-h-screen bg-[#fcfbf9] flex flex-col font-sans relative">
         <Navbar />
@@ -33,6 +42,9 @@ function App() {
             <Route path="/service-clarity" element={<ServiceClarity />} />
             <Route path="/service-guided" element={<ServiceGuided />} />
             <Route path="/service-insight" element={<ServiceInsight />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
           </Routes>
         </main>
 

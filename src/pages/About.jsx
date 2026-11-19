@@ -14,7 +14,7 @@ const About = () => {
         <div className="flex-1 w-full">
           <img 
             src={asset('counselor.jpg')} 
-            alt="Anora - Counselor and Psychologist" 
+            alt="Archi Mankar - Counselor and Psychologist" 
             className="w-full h-[600px] object-cover rounded-[2rem] shadow-lg"
           />
         </div>

@@ -1,0 +1,29 @@
+# NOT USED. The live site runs on Netlify (netlify.toml). Kept only as a fallback if you ever
+# want to host the backend on Render instead.
+# Render "Blueprint": creates the free backend server from this repo.
+# Render dashboard -> New -> Blueprint -> pick this repo. See DEPLOY.md.
+services:
+  - type: web
+    name: anora-counseling-server
+    runtime: node
+    region: singapore        # closest free region to India
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # Render's free plan blocks the Gmail SMTP ports, so emails go through the Google script
+      - key: EMAIL_TRANSPORT
+        value: script
+      # Only your website may call this server (origin only: no path, no trailing slash)
+      - key: CORS_ORIGIN
+        value: https://bhavesh-vaidya.github.io
+      # You will be asked for these two when you create the Blueprint
+      - key: GOOGLE_SCRIPT_URL
+        sync: false
+      - key: GOOGLE_SCRIPT_SECRET
+        sync: false
+      # Razorpay keys are added later in Render -> Environment (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)

@@ -2,8 +2,10 @@ import React from 'react';
 import { asset } from '../utils/asset';
 import ScheduleSession from '../components/ScheduleSession';
 import ContactSection from '../components/ContactSection';
+import { SERVICES, formatPrice } from '../data/services';
 
 const ServiceClarity = () => {
+  const svc = SERVICES.clarity;
   return (
     <div className="w-full bg-[#fcfbf9] text-[#333333] font-sans">
       {/* Hero Section */}
@@ -12,12 +14,13 @@ const ServiceClarity = () => {
           <span className="text-[#888888] text-xs font-bold tracking-widest uppercase block">Individual Counseling</span>
           <h1 className="text-4xl md:text-5xl font-serif text-[#1a1a1a]">Emotional Clarity Session</h1>
           <p className="text-[#555555] leading-relaxed max-w-md">
-            A dedicated space to navigate complex emotions and gain perspective. We focus on uncovering patterns and building resilience for lasting mental well-being.
+            {svc.description}
           </p>
           <div className="flex items-end gap-2 pt-2">
-            <span className="text-3xl font-bold text-[#1a1a1a]">₹1,500</span>
-            <span className="text-[#555555] text-sm pb-1">/ per 60 min session</span>
+            <span className="text-3xl font-bold text-[#1a1a1a]">{formatPrice(svc.price)}</span>
+            <span className="text-[#555555] text-sm pb-1">/ per {svc.minutes} min session</span>
           </div>
+          <p className="text-sm text-[#555555]"><span className="font-semibold text-[#3a5a40]">Best for:</span> {svc.bestFor}</p>
           <div className="flex gap-3 pt-4">
             <span className="bg-[#e8ece4] text-[#4a5f46] text-xs font-medium px-4 py-2 rounded-full">Evidence-Based</span>
             <span className="bg-[#e8ece4] text-[#4a5f46] text-xs font-medium px-4 py-2 rounded-full">Safe Space</span>
@@ -59,7 +62,7 @@ const ServiceClarity = () => {
 
       {/* Shared Components */}
       <section className="px-6">
-        <ScheduleSession serviceName="Emotional Clarity Session" price="₹1,500" duration="60 Minutes" />
+        <ScheduleSession serviceName={svc.name} price={formatPrice(svc.price)} duration={`${svc.minutes} Minutes`} minutes={svc.minutes} slots={svc.slots} />
       </section>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { MapPin, Mail, Globe, AtSign, Send } from 'lucide-react';
+import { MapPin, Mail, Phone, Globe, AtSign, Send } from 'lucide-react';
 import { API_URL, BUSINESS_EMAIL } from '../config/razorpay';
+import { BUSINESS } from '../config/business';
 
 const Contact = () => {
   const form = useRef();
@@ -48,10 +49,18 @@ const Contact = () => {
               Cultivating tranquility through professional care.
             </p>
             <div className="flex flex-col gap-6 mb-12">
-              <div className="flex items-center gap-4 text-gray-700">
-                <MapPin className="w-6 h-6 text-[#8c7355] shrink-0" />
-                <span>123 Serenity Path, Wellness District, CA 90210</span>
-              </div>
+              {BUSINESS.address && (
+                <div className="flex items-center gap-4 text-gray-700">
+                  <MapPin className="w-6 h-6 text-[#8c7355] shrink-0" />
+                  <span>{BUSINESS.address}</span>
+                </div>
+              )}
+              {BUSINESS.phone && (
+                <div className="flex items-center gap-4 text-gray-700">
+                  <Phone className="w-6 h-6 text-[#8c7355] shrink-0" />
+                  <a href={`tel:${BUSINESS.phone.replace(/\s+/g, '')}`} className="hover:text-[#3a5a40] transition-colors">{BUSINESS.phone}</a>
+                </div>
+              )}
               <div className="flex items-center gap-4 text-gray-700">
                 <Mail className="w-6 h-6 text-[#8c7355] shrink-0" />
                 <a href={`mailto:${BUSINESS_EMAIL}`} className="hover:text-[#3a5a40] transition-colors">{BUSINESS_EMAIL}</a>

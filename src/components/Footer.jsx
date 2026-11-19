@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { BUSINESS_EMAIL } from '../config/razorpay';
+import { BUSINESS } from '../config/business';
 
 const Footer = () => {
   return (
@@ -15,6 +17,12 @@ const Footer = () => {
           <a href={`mailto:${BUSINESS_EMAIL}`} className="inline-block mt-3 text-sm text-[#3a5a40] hover:underline">
             {BUSINESS_EMAIL}
           </a>
+          {BUSINESS.phone && (
+            <a href={`tel:${BUSINESS.phone.replace(/\s+/g, '')}`} className="block mt-1 text-sm text-[#555555] hover:text-[#3a5a40]">
+              {BUSINESS.phone}
+            </a>
+          )}
+          {BUSINESS.address && <p className="mt-1 text-sm text-[#555555] leading-relaxed">{BUSINESS.address}</p>}
         </div>
 
         {/* Right Side: Links */}
@@ -22,8 +30,9 @@ const Footer = () => {
           {/* Practice Column */}
           <div className="flex flex-col gap-3">
             <h3 className="text-[#8c7355] text-xs font-bold uppercase tracking-wider mb-2">Practice</h3>
-            <a href="#" className="text-[#555555] hover:text-[#3a5a40] text-sm transition-colors">Privacy Policy</a>
-            <a href="#" className="text-[#555555] hover:text-[#3a5a40] text-sm transition-colors">Terms of Service</a>
+            <Link to="/privacy" className="text-[#555555] hover:text-[#3a5a40] text-sm transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="text-[#555555] hover:text-[#3a5a40] text-sm transition-colors">Terms of Service</Link>
+            <Link to="/refund-policy" className="text-[#555555] hover:text-[#3a5a40] text-sm transition-colors">Refund &amp; Cancellation</Link>
           </div>
 
           {/* Resources Column */}

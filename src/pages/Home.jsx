@@ -48,7 +48,7 @@ const Home = () => {
             Your Journey to Emotional Strength Begins Here
           </h1>
           <p className="text-lg text-[#555555] leading-relaxed max-w-lg">
-            Hi, I'm Anora. I believe mental wellness is a collaborative journey. As your dedicated counselor, I provide a safe, tranquil space to help you navigate life's complexities and cultivate lasting emotional resilience.
+            Hi, I'm Archi. I believe mental wellness is a collaborative journey. As your dedicated counselor, I provide a safe, tranquil space to help you navigate life's complexities and cultivate lasting emotional resilience.
           </p>
           <div className="flex flex-wrap items-center gap-4 pt-4">
             

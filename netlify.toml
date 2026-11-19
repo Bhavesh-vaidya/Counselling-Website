@@ -1,0 +1,26 @@
+# Netlify (free plan) hosts BOTH the website and the backend (netlify/functions/api.mjs).
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # These VITE_ values are public by design (they end up in the website code). Without this,
+  # Netlify's secret scanner would block the build when it finds them.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_RAZORPAY_KEY_ID,VITE_BOOKINGS_OPEN,VITE_API_URL"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# 1) Backend: /api/* -> the function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# 2) Single-page app: every other path serves the site, so refreshing /services etc. works
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

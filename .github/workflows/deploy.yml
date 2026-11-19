@@ -1,43 +1,14 @@
-name: Deploy to GitHub Pages
+# DISABLED. GitHub Pages' rules do not allow a website that mainly takes bookings/payments,
+# so the live site is hosted on Netlify (see DEPLOY.md). This file is kept only so nothing
+# breaks; it never runs automatically. You can safely delete it.
+name: (disabled) GitHub Pages deploy
 
 on:
-  push:
-    branches: ["main"]
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+  workflow_dispatch:
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  disabled:
+    if: false
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: npm run build
-        env:
-          # Set these in GitHub -> Settings -> Secrets and variables -> Actions -> Variables
-          VITE_RAZORPAY_KEY_ID: ${{ vars.VITE_RAZORPAY_KEY_ID }}
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
-          VITE_MEET_LINK: ${{ vars.VITE_MEET_LINK }}
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - run: echo "Disabled - the site is hosted on Netlify"

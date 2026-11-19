@@ -2,8 +2,10 @@ import React from 'react';
 import { asset } from '../utils/asset';
 import ScheduleSession from '../components/ScheduleSession';
 import ContactSection from '../components/ContactSection';
+import { SERVICES, formatPrice } from '../data/services';
 
 const ServiceGuided = () => {
+  const svc = SERVICES.guided;
   return (
     <div className="w-full bg-[#fcfbf9] text-[#333333] font-sans">
       {/* Hero Section */}
@@ -12,12 +14,13 @@ const ServiceGuided = () => {
           <span className="bg-[#fdf3e7] text-[#a68a64] text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full inline-block">Individual Therapy</span>
           <h1 className="text-4xl md:text-5xl font-serif text-[#1a1a1a]">Guided Counseling Session</h1>
           <p className="text-[#555555] leading-relaxed max-w-md">
-            A supportive space addressing anxiety, stress, overthinking, and self-esteem. Focused on building practical tools and emotional resilience for daily life.
+            {svc.description}
           </p>
           <div className="flex items-end gap-2 pt-2">
-            <span className="text-3xl font-bold text-[#1a1a1a]">₹1,800</span>
-            <span className="text-[#555555] text-sm pb-1">/ per session (60 mins)</span>
+            <span className="text-3xl font-bold text-[#1a1a1a]">{formatPrice(svc.price)}</span>
+            <span className="text-[#555555] text-sm pb-1">/ per {svc.minutes} min session</span>
           </div>
+          <p className="text-sm text-[#555555]"><span className="font-semibold text-[#3a5a40]">Best for:</span> {svc.bestFor}</p>
           <button onClick={() => document.getElementById('schedule-session')?.scrollIntoView({ behavior: 'smooth' })} className="mt-4 bg-[#1a1a1a] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#333333] transition-colors">
             SECURE YOUR SPOT
           </button>
@@ -58,7 +61,7 @@ const ServiceGuided = () => {
 
       {/* Shared Components */}
       <section className="px-6">
-        <ScheduleSession serviceName="Guided Counseling Session" price="₹1,800" duration="60 Minutes" />
+        <ScheduleSession serviceName={svc.name} price={formatPrice(svc.price)} duration={`${svc.minutes} Minutes`} minutes={svc.minutes} slots={svc.slots} />
       </section>
     </div>
   );
