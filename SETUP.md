@@ -94,7 +94,6 @@ and `npm run test-calendar`. If `GOOGLE_SCRIPT_URL` is set, the script (3A) is u
 5. Switch to `rzp_live_` keys after KYC activation.
 Until then the site runs in DEMO MODE (simulated payment, bookings labelled `Demo - Not Paid`).
 
-<<<<<<< HEAD
 ## 5. Deploy
 Full free-deployment steps are in **DEPLOY.md** (Netlify).
 
@@ -104,14 +103,6 @@ Full free-deployment steps are in **DEPLOY.md** (Netlify).
 - **Frontend** (GitHub Pages): GitHub -> Settings -> Secrets and variables -> Actions -> *Variables*:
   `VITE_RAZORPAY_KEY_ID`, `VITE_API_URL` (your backend URL). Push to `main` and the workflow deploys.
 
-=======
-## 5. Deploy (later)
-- **Backend** (Express) needs a host (Render / Railway). Set the same env vars there (EMAIL_PASS,
-  GOOGLE_SCRIPT_*, RAZORPAY_*) plus `CORS_ORIGIN=https://<username>.github.io`.
-- **Frontend** (GitHub Pages): GitHub -> Settings -> Secrets and variables -> Actions -> *Variables*:
-  `VITE_RAZORPAY_KEY_ID`, `VITE_API_URL` (your backend URL). Push to `main` and the workflow deploys.
-
->>>>>>> ae9c0337741534602ece59deb41f0ada407b45bb
 ## Slot locking (no double booking, with breaks)
 Taken times are stored in the Firestore collection `slots` and greyed out as "Booked" for everyone.
 - Clarity (45 min) is offered every hour; Guided (75) and Deep Insight (90) only at 6 PM and 8 PM.
